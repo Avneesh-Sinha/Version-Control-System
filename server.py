@@ -44,4 +44,4 @@ def pull_changes():
     return jsonify({'filename': filename, 'content': content}), 200
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=8000)
+    app.run(host='0.0.0.0', port=8888)

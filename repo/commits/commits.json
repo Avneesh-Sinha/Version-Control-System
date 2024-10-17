@@ -160,5 +160,41 @@
                 "+More changes."
             ]
         }
+    },
+    {
+        "id": 11,
+        "timestamp": "2024-10-18T02:10:16.462276",
+        "message": "Initial commit",
+        "snapshot": {
+            "example.txt": "a4a555a8c159524064a374535615369f280e21ec22a5ff939d30ffbe63c121fb"
+        },
+        "diff_log": {
+            "example.txt": [
+                "--- ",
+                "+++ ",
+                "@@ -1,2 +1 @@",
+                "-Updated content\n",
+                "-More changes.",
+                "+Initial content."
+            ]
+        }
+    },
+    {
+        "id": 12,
+        "timestamp": "2024-10-18T02:10:16.468787",
+        "message": "Updated content.",
+        "snapshot": {
+            "example.txt": "a8d6888a4dd3e73e60d56c31b8b9ac8a1731ff9f8117f995ad101e93b4dd660d"
+        },
+        "diff_log": {
+            "example.txt": [
+                "--- ",
+                "+++ ",
+                "@@ -1 +1,2 @@",
+                "-Initial content.",
+                "+Updated content\n",
+                "+More changes."
+            ]
+        }
     }
 ]
