@@ -1,7 +1,7 @@
 import requests
 
 # Change this to your server's IP address
-SERVER_URL = 'http://127.0.0.1:8000'
+SERVER_URL = 'http://127.0.0.1:8888'
 
 def push_changes(filename, content):
     """Push changes to the remote server."""
