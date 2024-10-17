@@ -1,33 +1,47 @@
-from http.server import SimpleHTTPRequestHandler, HTTPServer
-import json
+from flask import Flask, request, jsonify
+import os
 
-commits_db = []  # Simulate the remote repository commits storage
+app = Flask(__name__)
 
-class VCSServer(SimpleHTTPRequestHandler):
-    def do_GET(self):
-        """Handle pulling changes (client pulls new commits)."""
-        self.send_response(200)
-        self.end_headers()
-        self.wfile.write(json.dumps(commits_db).encode('utf-8'))
+# Path to where you'll store incoming files
+REPO_PATH = 'repo/files'
 
-    def do_POST(self):
-        """Handle pushing changes (client sends new commits)."""
-        content_length = int(self.headers['Content-Length'])
-        post_data = self.rfile.read(content_length)
-        received_commits = json.loads(post_data.decode('utf-8')).get('commits', [])
-        global commits_db
-        commits_db.extend(received_commits)  # Store commits in the "remote" database
-        self.send_response(200)
-        self.end_headers()
-        self.wfile.write(b"Commits received and stored.")
+if not os.path.exists(REPO_PATH):
+    os.makedirs(REPO_PATH)
 
-# Run the server
-def run_server(server_class=HTTPServer, handler_class=VCSServer, port=6900):
-    server_address = ('', port)
-    httpd = server_class(server_address, handler_class)
-    print(f"Starting server on port {port}")
-    httpd.serve_forever()
+@app.route('/push', methods=['POST'])
+def push_changes():
+    """Receive file updates from the client."""
+    data = request.json
+    filename = data.get('filename')
+    content = data.get('content')
 
-# Start the VCS server
+    if not filename or not content:
+        return jsonify({'error': 'Missing filename or content'}), 400
+
+    # Save the file to your repository
+    filepath = os.path.join(REPO_PATH, filename)
+    with open(filepath, 'w') as f:
+        f.write(content)
+
+    return jsonify({'status': f'File {filename} updated successfully'}), 200
+
+@app.route('/pull', methods=['GET'])
+def pull_changes():
+    """Allow the client to pull the latest version of the file."""
+    filename = request.args.get('filename')
+
+    if not filename:
+        return jsonify({'error': 'Missing filename'}), 400
+
+    filepath = os.path.join(REPO_PATH, filename)
+    if not os.path.exists(filepath):
+        return jsonify({'error': f'File {filename} not found'}), 404
+
+    with open(filepath, 'r') as f:
+        content = f.read()
+
+    return jsonify({'filename': filename, 'content': content}), 200
+
 if __name__ == '__main__':
-    run_server()
+    app.run(host='0.0.0.0', port=8000)

@@ -1,13 +1,32 @@
-from vcs import VCS
+import requests
 
-# Remote server URL
-remote_url = 'http://localhost:6900'
+# Change this to your server's IP address
+SERVER_URL = 'http://103.211.18.15:8000'
 
-# Initialize the VCS instance
-vcs = VCS()
+def push_changes(filename, content):
+    """Push changes to the remote server."""
+    url = f'{SERVER_URL}/push'
+    data = {'filename': filename, 'content': content}
+    response = requests.post(url, json=data)
 
-# Push changes to the remote server
-vcs.push_changes(remote_url)
+    if response.status_code == 200:
+        print(f"File '{filename}' pushed successfully.")
+    else:
+        print(f"Error: {response.json().get('error')}")
 
-# Pull changes from the remote server
-vcs.pull_changes(remote_url)
+def pull_changes(filename):
+    """Pull the latest changes from the remote server."""
+    url = f'{SERVER_URL}/pull'
+    params = {'filename': filename}
+    response = requests.get(url, params=params)
+
+    if response.status_code == 200:
+        data = response.json()
+        print(f"Pulled file '{data['filename']}':\n{data['content']}")
+    else:
+        print(f"Error: {response.json().get('error')}")
+
+if __name__ == '__main__':
+    # Example usage
+    push_changes('example.txt', 'Content from client system.')
+    pull_changes('example.txt')
