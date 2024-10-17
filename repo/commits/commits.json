@@ -1,0 +1,20 @@
+[
+    {
+        "id": 1,
+        "timestamp": "2024-10-18T01:03:35.165716",
+        "message": "Initial commit",
+        "snapshot": {
+            "example.txt": "a4a555a8c159524064a374535615369f280e21ec22a5ff939d30ffbe63c121fb"
+        },
+        "diff_log": {}
+    },
+    {
+        "id": 2,
+        "timestamp": "2024-10-18T01:03:35.184521",
+        "message": "Updated content.",
+        "snapshot": {
+            "example.txt": "a8d6888a4dd3e73e60d56c31b8b9ac8a1731ff9f8117f995ad101e93b4dd660d"
+        },
+        "diff_log": {}
+    }
+]
