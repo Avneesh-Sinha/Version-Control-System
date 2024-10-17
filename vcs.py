@@ -233,8 +233,4 @@ class VCS:
 
 # Example usage
 vcs = VCS()
-vcs.add_file('example.txt', 'Initial content.')
-vcs.commit('Initial commit')
-vcs.add_file('example.txt', 'Updated content\nMore changes.')
-vcs.commit('Updated content.')
 vcs.view_history()

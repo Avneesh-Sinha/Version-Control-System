@@ -1,47 +1,49 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_file
 import os
+import json
+from vcs import VCS
 
 app = Flask(__name__)
+vcs = VCS()
 
-# Path to where you'll store incoming files
-REPO_PATH = 'repo/files'
-
-if not os.path.exists(REPO_PATH):
-    os.makedirs(REPO_PATH)
+# Simple authorization token (replace with a more secure method in production)
+# AUTH_TOKEN = "your_secret_token"
 
 @app.route('/push', methods=['POST'])
 def push_changes():
-    """Receive file updates from the client."""
-    data = request.json
-    filename = data.get('filename')
-    content = data.get('content')
+    # Check for authorization
+    # token = request.headers.get('Authorization')
+    # if token != f"Bearer {AUTH_TOKEN}":
+    #     return jsonify({"error": "Unauthorized"}), 401
 
-    if not filename or not content:
-        return jsonify({'error': 'Missing filename or content'}), 400
+    # Get the data from the request
+    data = request.get_json()
+    if not data or 'filename' not in data or 'content' not in data:
+        return jsonify({"error": "Invalid data"}), 400
 
-    # Save the file to your repository
-    filepath = os.path.join(REPO_PATH, filename)
-    with open(filepath, 'w') as f:
-        f.write(content)
+    # Add the file to the VCS and commit the changes
+    filename = data['filename']
+    content = data['content']
 
-    return jsonify({'status': f'File {filename} updated successfully'}), 200
+    vcs.add_file(filename, content)
+    vcs.commit(f"Updated {filename} from client.")
 
-@app.route('/pull', methods=['GET'])
-def pull_changes():
-    """Allow the client to pull the latest version of the file."""
-    filename = request.args.get('filename')
+    return jsonify({"message": "Changes committed successfully."}), 200
 
-    if not filename:
-        return jsonify({'error': 'Missing filename'}), 400
+@app.route('/clone', methods=['GET'])
+def clone_repo():
+    # Clone repository functionality
+    commits = vcs.commits
+    return jsonify(commits), 200
 
-    filepath = os.path.join(REPO_PATH, filename)
-    if not os.path.exists(filepath):
-        return jsonify({'error': f'File {filename} not found'}), 404
-
-    with open(filepath, 'r') as f:
-        content = f.read()
-
-    return jsonify({'filename': filename, 'content': content}), 200
+@app.route('/pull/<filename>', methods=['GET'])
+def pull_changes(filename):
+    """Pull the latest version of the specified file."""
+    file_path = os.path.join(vcs.files_path, filename)
+    if os.path.exists(file_path):
+        return send_file(file_path, as_attachment=True)
+    else:
+        return jsonify({"error": "File not found"}), 404
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=8888)
+    app.run(host='0.0.0.0', port=8888)  # Adjust port as needed

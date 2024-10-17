@@ -1,32 +1,50 @@
 import requests
+import json
 
-# Change this to your server's IP address
-SERVER_URL = 'http://127.0.0.1:8888'
+SERVER_URL = "https://c5a6-103-211-18-119.ngrok-free.app/"  # Replace with your ngrok URL
+# AUTH_TOKEN = "your_secret_token"  # Same token as in server.py
 
 def push_changes(filename, content):
-    """Push changes to the remote server."""
-    url = f'{SERVER_URL}/push'
+    url = f"{SERVER_URL}/push"
+    # headers = {'Authorization': f'Bearer {AUTH_TOKEN}'}
     data = {'filename': filename, 'content': content}
+    
     response = requests.post(url, json=data)
-
     if response.status_code == 200:
-        print(f"File '{filename}' pushed successfully.")
+        print("Changes committed successfully.")
     else:
-        print(f"Error: {response.json().get('error')}")
+        print("Failed to commit changes:", response.json())
+
+def clone_repo():
+    url = f"{SERVER_URL}/clone"
+    response = requests.get(url)
+    if response.status_code == 200:
+        commits = response.json()
+        print("Cloned Repository Commits:")
+        for commit in commits:
+            print(f"Commit ID: {commit['id']}, Message: {commit['message']}")
+    else:
+        print("Failed to clone repository:", response.json())
 
 def pull_changes(filename):
-    """Pull the latest changes from the remote server."""
-    url = f'{SERVER_URL}/pull'
-    params = {'filename': filename}
-    response = requests.get(url, params=params)
-
+    """Pull the latest version of the specified file from the server."""
+    url = f"{SERVER_URL}/pull/{filename}"
+    response = requests.get(url)
+    
     if response.status_code == 200:
-        data = response.json()
-        print(f"Pulled file '{data['filename']}':\n{data['content']}")
+        with open(filename, 'wb') as f:
+            f.write(response.content)
+        print(f"{filename} has been updated with the latest version.")
     else:
-        print(f"Error: {response.json().get('error')}")
+        print("Failed to pull changes:", response.json())
 
-if __name__ == '__main__':
-    # Example usage
-    push_changes('example.txt', 'Content from client Gaurav\'s system.')
+# Example usage
+if __name__ == "__main__":
+    # Pushing changes
+    push_changes('example.txt', 'Updated content from client.')
+    
+    # Cloning the repository
+    clone_repo()
+    
+    # Pulling changes
     pull_changes('example.txt')
