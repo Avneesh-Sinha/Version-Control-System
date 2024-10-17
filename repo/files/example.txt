@@ -1,2 +1,1 @@
-Updated content
-More changes.
+Content from client system.

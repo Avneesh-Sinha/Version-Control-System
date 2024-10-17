@@ -1,7 +1,7 @@
 import requests
 
 # Change this to your server's IP address
-SERVER_URL = 'http://103.211.18.15:8000'
+SERVER_URL = 'http://127.0.0.1:8000'
 
 def push_changes(filename, content):
     """Push changes to the remote server."""
@@ -28,5 +28,5 @@ def pull_changes(filename):
 
 if __name__ == '__main__':
     # Example usage
-    push_changes('example.txt', 'Content from client system.')
+    push_changes('example.txt', 'Content from client Gaurav\'s system.')
     pull_changes('example.txt')
