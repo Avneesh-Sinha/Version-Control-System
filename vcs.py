@@ -111,31 +111,6 @@ class VCS:
             diff = list(difflib.unified_diff(old_content, new_content, lineterm=''))
             return diff if diff else None
 
-    # def generate_diff(self, filename):
-    #     """Generate a simple diff for the file."""
-    #     filepath = os.path.join(self.files_path, filename)
-    #     version_path = os.path.join(self.versions_path, self.hash_file(filepath))
-        
-    #     try:
-    #         with open(filepath, 'r') as f:
-    #             new_content = f.readlines()
-    #         if os.path.exists(version_path):
-    #             with open(version_path, 'r') as f:
-    #                 old_content = f.readlines()
-    #         else:
-    #             old_content = []
-
-    #         diff = []
-    #         for i, (old_line, new_line) in enumerate(zip(old_content, new_content)):
-    #             if old_line != new_line:
-    #                 diff.append(f"@@ -{i+1} +{i+1},{len(new_content)} @@")
-    #                 diff.append(f"- {old_line.strip()}")
-    #                 diff.append(f"+ {new_line.strip()}")
-    #         return diff if diff else None
-    #     except Exception as e:
-    #         print(f"Error generating diff: {e}")
-    #         return None
-
     def add_file(self, filename, content):
         """Add a new file to the VCS."""
         filepath = os.path.join(self.files_path, filename)
@@ -157,31 +132,6 @@ class VCS:
                 print(f"  File: {filename}")
                 self.format_diff(diff)
             print('-' * 30)
-
-    # def format_diff(self, diff):
-    #     """Format and print the diff output to be more human-readable."""
-    #     for line in diff:
-    #         if line.startswith('---') or line.startswith('+++'):
-    #             print(line)
-    #         elif line.startswith('-'):
-    #             print(f"  Removed: {line[1:].strip()}")
-    #         elif line.startswith('+'):
-    #             print(f"  Added: {line[1:].strip()}")
-
-    # def view_history(self):
-    #     """Display the commit history in a human-readable format."""
-    #     if not self.commits:
-    #         print("No commits found.")
-    #         return
-    #     for commit in self.commits:
-    #         print(f"Commit ID: {commit['id']}")
-    #         print(f"Timestamp: {commit['timestamp']}")
-    #         print(f"Message: {commit['message']}")
-    #         print("Changes:")
-    #         for filename, diff in commit.get('diff_log', {}).items():
-    #             print(f"  File: {filename}")
-    #             self.format_diff(diff)
-    #         print('-' * 30)
 
     def format_diff(self, diff):
         """Format the diff output to be more human-readable."""

@@ -20,6 +20,13 @@ def push_changes():
     data = request.get_json()
     if not data or 'filename' not in data or 'content' not in data:
         return jsonify({"error": "Invalid data"}), 400
+    
+    # Prompt server administrator for manual authorization
+    print("Client is trying to push changes. Authorize the push? (yes/no):")
+    user_input = input().strip().lower()
+
+    if user_input != "yes":
+        return jsonify({"message": "Push denied by server."}), 403
 
     # Add the file to the VCS and commit the changes
     filename = data['filename']
