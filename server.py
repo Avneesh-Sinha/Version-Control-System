@@ -4,6 +4,8 @@ import json
 from vcs import VCS
 import filecmp
 import shutil
+import tempfile
+import zipfile
 
 app = Flask(__name__)
 vcs = VCS()
@@ -35,6 +37,12 @@ def detect_changes(branch_name):
 
     return changes
 
+def ensure_branch_exists(branch_name):
+    if branch_name not in vcs.branches:
+        vcs.create_branch(branch_name)
+        return True
+    return False
+
 @app.route('/push', methods=['POST'])
 def push_changes():
     try:
@@ -44,8 +52,7 @@ def push_changes():
         
         branch = data['branch']
         
-        if branch not in vcs.branches:
-            return jsonify({"error": f"Branch '{branch}' does not exist"}), 400
+        branch_created = ensure_branch_exists(branch)
         
         if branch != vcs.current_branch:
             vcs.switch_branch(branch)
@@ -53,7 +60,10 @@ def push_changes():
         changes = detect_changes(branch)
         
         if not changes:
-            return jsonify({"message": "No changes detected"}), 200
+            return jsonify({
+                "message": "No changes detected",
+                "branch_created": branch_created
+            }), 200
         
         for filename, content in changes.items():
             vcs.add_file(filename, content)
@@ -64,7 +74,8 @@ def push_changes():
         return jsonify({
             "message": "Changes committed successfully.",
             "branch": branch,
-            "files_changed": list(changes.keys())
+            "files_changed": list(changes.keys()),
+            "branch_created": branch_created
         }), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
@@ -97,8 +108,13 @@ def switch_branch():
         if not data or 'name' not in data:
             return jsonify({"error": "Branch name is required"}), 400
         
-        vcs.switch_branch(data['name'])
-        return jsonify({"message": f"Switched to branch '{data['name']}'"}), 200
+        branch_name = data['name']
+        branch_created = ensure_branch_exists(branch_name)
+        vcs.switch_branch(branch_name)
+        return jsonify({
+            "message": f"Switched to branch '{branch_name}'",
+            "branch_created": branch_created
+        }), 200
     except ValueError as e:
         return jsonify({"error": str(e)}), 400
     except Exception as e:
@@ -129,28 +145,70 @@ def list_branches():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+
+
 @app.route('/clone', methods=['GET'])
 def clone_repo():
     try:
-        return jsonify({
+        clone_data = {
             "commits": vcs.commits,
-            "branches": vcs.branches
-        }), 200
+            "branches": {}
+        }
+        
+        for branch_name, branch_info in vcs.branches.items():
+            current_branch = vcs.current_branch
+            vcs.switch_branch(branch_name)
+            
+            branch_files = {}
+            branch_path = vcs.get_current_files_path()
+            for root, _, files in os.walk(branch_path):
+                for file in files:
+                    file_path = os.path.join(root, file)
+                    with open(file_path, 'r') as f:
+                        content = f.read()
+                    rel_path = os.path.relpath(file_path, branch_path)
+                    branch_files[rel_path] = content
+            
+            clone_data["branches"][branch_name] = {
+                "info": branch_info,
+                "files": branch_files
+            }
+            
+            vcs.switch_branch(current_branch)
+        
+        return jsonify(clone_data), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-@app.route('/pull/<filename>', methods=['GET'])
-def pull_changes(filename):
+
+@app.route('/pull', methods=['GET'])
+def pull_changes():
     try:
         branch = request.args.get('branch', 'main')
+        branch_created = ensure_branch_exists(branch)
+        
         if branch != vcs.current_branch:
             vcs.switch_branch(branch)
         
-        file_path = os.path.join(vcs.get_current_files_path(), filename)
-        if os.path.exists(file_path):
-            return send_file(file_path, as_attachment=True)
-        else:
-            return jsonify({"error": "File not found"}), 404
+        branch_path = vcs.get_current_files_path()
+        
+        # Create a temporary directory to store the zipped files
+        with tempfile.TemporaryDirectory() as tmpdir:
+            zip_path = os.path.join(tmpdir, f"{branch}_files.zip")
+            
+            with zipfile.ZipFile(zip_path, 'w') as zipf:
+                for root, _, files in os.walk(branch_path):
+                    for file in files:
+                        file_path = os.path.join(root, file)
+                        arcname = os.path.relpath(file_path, branch_path)
+                        zipf.write(file_path, arcname)
+            
+            return send_file(
+                zip_path,
+                mimetype='application/zip',
+                as_attachment=True,
+                download_name=f"{branch}_files.zip"
+            )
     except ValueError as e:
         return jsonify({"error": str(e)}), 400
     except Exception as e:
