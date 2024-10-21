@@ -24,6 +24,178 @@ class VCS:
         if os.path.exists(commits_file):
             with open(commits_file, 'r') as f:
                 self.commits = json.load(f)
+    def __init__(self, repo_path='repo'):
+        self.repo_path = repo_path
+        self.commits_path = os.path.join(self.repo_path, 'commits')
+        self.files_path = os.path.join(self.repo_path, 'files')
+        self.versions_path = os.path.join(self.repo_path, 'versions')
+        self.branches_path = os.path.join(self.repo_path, 'branches')
+        
+        # Create necessary directories
+        os.makedirs(self.commits_path, exist_ok=True)
+        os.makedirs(self.files_path, exist_ok=True)
+        os.makedirs(self.versions_path, exist_ok=True)
+        os.makedirs(self.branches_path, exist_ok=True)
+        
+        # Initialize branches and load commits
+        self.initialize_branches()
+        self.load_commits()
+
+    def initialize_branches(self):
+        """Initialize branch structure and create main branch if it doesn't exist."""
+        self.branches_file = os.path.join(self.branches_path, 'branches.json')
+        if not os.path.exists(self.branches_file):
+            self.branches = {
+                'main': {
+                    'name': 'main',
+                    'current_commit': None,
+                    'commits': []
+                }
+            }
+            self.current_branch = 'main'
+            self.save_branches()
+        else:
+            self.load_branches()
+
+    def load_branches(self):
+        """Load existing branches from the branches file."""
+        with open(self.branches_file, 'r') as f:
+            self.branches = json.load(f)
+        # Set current branch to main if not set
+        if not hasattr(self, 'current_branch'):
+            self.current_branch = 'main'
+
+    def save_branches(self):
+        """Save branches to the branches file."""
+        with open(self.branches_file, 'w') as f:
+            json.dump(self.branches, f, indent=4)
+
+    def create_branch(self, branch_name, source_branch=None):
+        """Create a new branch from the current or specified branch."""
+        if branch_name in self.branches:
+            raise ValueError(f"Branch '{branch_name}' already exists")
+
+        source = source_branch if source_branch else self.current_branch
+        if source not in self.branches:
+            raise ValueError(f"Source branch '{source}' does not exist")
+
+        # Create new branch with same commits as source branch
+        self.branches[branch_name] = {
+            'name': branch_name,
+            'current_commit': self.branches[source]['current_commit'],
+            'commits': self.branches[source]['commits'].copy()
+        }
+        self.save_branches()
+        print(f"Created new branch '{branch_name}' from '{source}'")
+
+    def switch_branch(self, branch_name):
+        """Switch to a different branch."""
+        if branch_name not in self.branches:
+            raise ValueError(f"Branch '{branch_name}' does not exist")
+
+        # Save current branch state
+        self.branches[self.current_branch]['current_commit'] = self.get_latest_commit_id()
+        
+        # Switch branch
+        self.current_branch = branch_name
+        
+        # Restore files from the latest commit in the new branch
+        latest_commit = self.get_latest_commit()
+        if latest_commit:
+            self.restore_commit_state(latest_commit)
+        
+        self.save_branches()
+        print(f"Switched to branch '{branch_name}'")
+
+    def merge_branch(self, source_branch, target_branch=None):
+        """Merge source branch into target branch (defaults to current branch)."""
+        if source_branch not in self.branches:
+            raise ValueError(f"Source branch '{source_branch}' does not exist")
+
+        target = target_branch if target_branch else self.current_branch
+        if target not in self.branches:
+            raise ValueError(f"Target branch '{target}' does not exist")
+
+        # Get the latest commits from both branches
+        source_commits = self.branches[source_branch]['commits']
+        target_commits = self.branches[target]['commits']
+
+        if not source_commits:
+            print(f"Nothing to merge - source branch '{source_branch}' has no commits")
+            return
+
+        # Create a new commit for the merge
+        merge_message = f"Merged branch '{source_branch}' into '{target}'"
+        
+        # Combine file versions from both branches
+        merged_snapshot = {}
+        merged_files = set()
+
+        # Get latest commit from target branch
+        target_latest = self.get_commit_by_id(target_commits[-1]) if target_commits else None
+        
+        # Get latest commit from source branch
+        source_latest = self.get_commit_by_id(source_commits[-1])
+
+        # Start with target branch files
+        if target_latest:
+            merged_snapshot.update(target_latest['snapshot'])
+            merged_files.update(target_latest['snapshot'].keys())
+
+        # Add/update with source branch files
+        merged_snapshot.update(source_latest['snapshot'])
+        merged_files.update(source_latest['snapshot'].keys())
+
+        # Create merge commit
+        commit_data = {
+            'id': len(self.commits) + 1,
+            'timestamp': datetime.now().isoformat(),
+            'message': merge_message,
+            'snapshot': merged_snapshot,
+            'parent_commits': [source_commits[-1], target_commits[-1] if target_commits else None],
+            'is_merge': True
+        }
+
+        # Add commit to both branches
+        self.commits.append(commit_data)
+        self.branches[target]['commits'].append(commit_data['id'])
+        self.branches[target]['current_commit'] = commit_data['id']
+        
+        self.save_commits()
+        self.save_branches()
+        
+        print(f"Successfully merged '{source_branch}' into '{target}'")
+        return commit_data['id']
+
+    def get_latest_commit_id(self):
+        """Get the ID of the latest commit in the current branch."""
+        branch_commits = self.branches[self.current_branch]['commits']
+        return branch_commits[-1] if branch_commits else None
+
+    def get_latest_commit(self):
+        """Get the latest commit object in the current branch."""
+        latest_id = self.get_latest_commit_id()
+        return self.get_commit_by_id(latest_id) if latest_id else None
+
+    def get_commit_by_id(self, commit_id):
+        """Get a commit object by its ID."""
+        return next((commit for commit in self.commits if commit['id'] == commit_id), None)
+
+    def restore_commit_state(self, commit):
+        """Restore the repository state to a specific commit."""
+        if not commit:
+            return
+
+        # Clear current files
+        for file in os.listdir(self.files_path):
+            os.remove(os.path.join(self.files_path, file))
+
+        # Restore files from commit
+        for filename, file_hash in commit['snapshot'].items():
+            self.restore_version(filename, file_hash)
+
+    # The rest of your existing VCS methods remain the same
+    # (load_commits, save_commits, hash_file, etc.)
 
     def save_commits(self):
         """Save the commits log to a file."""
@@ -68,7 +240,7 @@ class VCS:
         return []
 
     def commit(self, message):
-        """Create a new commit with a message."""
+        """Create a new commit with a message in the current branch."""
         snapshot = {}
         diff_log = {}
         for filename in os.listdir(self.files_path):
@@ -80,10 +252,13 @@ class VCS:
 
             # Try to get previous version of the file (from the last commit)
             if self.commits:
-                last_commit = self.commits[-1]
-                old_file_hash = last_commit['snapshot'].get(filename)
-                old_version_path = os.path.join(self.versions_path, old_file_hash) if old_file_hash else None
-                old_content = self.get_file_content(old_version_path) if old_version_path else []
+                last_commit = self.get_latest_commit()
+                if last_commit:
+                    old_file_hash = last_commit['snapshot'].get(filename)
+                    old_version_path = os.path.join(self.versions_path, old_file_hash) if old_file_hash else None
+                    old_content = self.get_file_content(old_version_path) if old_version_path else []
+                else:
+                    old_content = []
             else:
                 old_content = []
 
@@ -100,11 +275,17 @@ class VCS:
             'timestamp': datetime.now().isoformat(),
             'message': message,
             'snapshot': snapshot,
-            'diff_log': diff_log
+            'diff_log': diff_log,
+            'branch': self.current_branch
         }
+        
         self.commits.append(commit_data)
+        self.branches[self.current_branch]['commits'].append(commit_data['id'])
+        self.branches[self.current_branch]['current_commit'] = commit_data['id']
+        
         self.save_commits()
-        print(f"Commit {commit_data['id']} created: {message}")
+        self.save_branches()
+        print(f"Commit {commit_data['id']} created on branch '{self.current_branch}': {message}")
 
     def generate_diff(self, old_content, new_content):
             """Generate a diff between two versions of file content."""
