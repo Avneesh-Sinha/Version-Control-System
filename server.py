@@ -145,8 +145,6 @@ def list_branches():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-
-
 @app.route('/clone', methods=['GET'])
 def clone_repo():
     try:
@@ -185,32 +183,36 @@ def clone_repo():
 def pull_changes():
     try:
         branch = request.args.get('branch', 'main')
-        branch_created = ensure_branch_exists(branch)
-        
-        if branch != vcs.current_branch:
-            vcs.switch_branch(branch)
-        
+        if branch not in vcs.branches:
+            return jsonify({"error": f"Branch '{branch}' does not exist"}), 404
+
+        # Switch to the requested branch
+        current_branch = vcs.current_branch
+        vcs.switch_branch(branch)
+
+        # Get all files in the branch
         branch_path = vcs.get_current_files_path()
-        
-        # Create a temporary directory to store the zipped files
-        with tempfile.TemporaryDirectory() as tmpdir:
-            zip_path = os.path.join(tmpdir, f"{branch}_files.zip")
-            
-            with zipfile.ZipFile(zip_path, 'w') as zipf:
-                for root, _, files in os.walk(branch_path):
-                    for file in files:
-                        file_path = os.path.join(root, file)
-                        arcname = os.path.relpath(file_path, branch_path)
-                        zipf.write(file_path, arcname)
-            
-            return send_file(
-                zip_path,
-                mimetype='application/zip',
-                as_attachment=True,
-                download_name=f"{branch}_files.zip"
-            )
-    except ValueError as e:
-        return jsonify({"error": str(e)}), 400
+        files = {}
+        for root, _, filenames in os.walk(branch_path):
+            for filename in filenames:
+                file_path = os.path.join(root, filename)
+                with open(file_path, 'r') as f:
+                    content = f.read()
+                rel_path = os.path.relpath(file_path, branch_path)
+                files[rel_path] = content
+
+        # Switch back to the original branch
+        vcs.switch_branch(current_branch)
+
+        # Create a temporary zip file
+        with tempfile.NamedTemporaryFile(delete=False, suffix='.zip') as temp_zip:
+            with zipfile.ZipFile(temp_zip, 'w') as zf:
+                for filename, content in files.items():
+                    zf.writestr(filename, content)
+
+        # Send the zip file
+        return send_file(temp_zip.name, mimetype='application/zip', as_attachment=True, download_name=f'{branch}_files.zip')
+
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 

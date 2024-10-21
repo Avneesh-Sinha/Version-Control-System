@@ -1,6 +1,8 @@
 import requests
 import json
 import os
+import zipfile
+import io
 
 class VCSClient:
     def __init__(self, server_url):
@@ -8,18 +10,21 @@ class VCSClient:
         self.local_path = 'local_repo'
         os.makedirs(self.local_path, exist_ok=True)
 
-    def push_changes(self, filename, content, branch='main'):
+    def push_changes(self, branch='main'):
         """Push changes to a specific branch."""
         url = f"{self.server_url}/push"
-        data = {
-            'filename': filename,
-            'content': content,
-            'branch': branch
-        }
+        data = {'branch': branch}
         
         response = requests.post(url, json=data)
         if response.status_code == 200:
-            print(f"Changes committed successfully to branch '{branch}'.")
+            result = response.json()
+            if result.get('branch_created'):
+                print(f"New branch '{branch}' created and changes committed successfully.")
+            elif result.get('files_changed'):
+                print(f"Changes committed successfully to branch '{branch}'.")
+                print("Files changed:", ', '.join(result['files_changed']))
+            else:
+                print("No changes detected.")
         else:
             print("Failed to commit changes:", response.json())
 
@@ -44,7 +49,11 @@ class VCSClient:
         
         response = requests.post(url, json=data)
         if response.status_code == 200:
-            print(f"Switched to branch '{branch_name}'.")
+            result = response.json()
+            if result.get('branch_created'):
+                print(f"New branch '{branch_name}' created and switched successfully.")
+            else:
+                print(f"Switched to branch '{branch_name}'.")
         else:
             print("Failed to switch branch:", response.json())
 
@@ -94,27 +103,51 @@ class VCSClient:
                 print("-" * 40)
             
             print("\nBranches:")
-            for branch_name, branch_info in repo_data['branches'].items():
-                print(f"- {branch_name} (Current commit: {branch_info.get('current_commit', 'No commits')})")
+            for branch_name, branch_data in repo_data['branches'].items():
+                print(f"- {branch_name}")
+                print(f"  Current commit: {branch_data['info'].get('current_commit', 'No commits')}")
+                print("  Files:")
+                for filename, content in branch_data['files'].items():
+                    print(f"    - {filename}")
+                    local_path = os.path.join(self.local_path, branch_name, filename)
+                    os.makedirs(os.path.dirname(local_path), exist_ok=True)
+                    with open(local_path, 'w') as f:
+                        f.write(content)
+                print("-" * 40)
+            print(f"All files have been saved to {self.local_path}")
         else:
             print("Failed to clone repository:", response.json())
 
-    def pull_changes(self, filename, branch='main'):
-        """Pull the latest version of a file from a specific branch."""
-        url = f"{self.server_url}/pull/{filename}"
+    def pull_changes(self, branch='main'):
+        url = f"{self.server_url}/pull"
         params = {'branch': branch}
-        response = requests.get(url, params=params)
+        response = requests.get(url, params=params, stream=True)
         
         if response.status_code == 200:
-            local_path = os.path.join(self.local_path, filename)
-            with open(local_path, 'wb') as f:
-                f.write(response.content)
-            print(f"Successfully pulled '{filename}' from branch '{branch}'")
+            content_type = response.headers.get('Content-Type', '')
+            
+            if 'application/zip' in content_type:
+                # Handle ZIP file download
+                with open(f'{branch}_files.zip', 'wb') as f:
+                    for chunk in response.iter_content(chunk_size=8192):
+                        f.write(chunk)
+                
+                # Extract the ZIP file
+                extract_path = os.path.join(self.local_path, branch)
+                with zipfile.ZipFile(f'{branch}_files.zip', 'r') as zip_ref:
+                    zip_ref.extractall(extract_path)
+                
+                os.remove(f'{branch}_files.zip')  # Remove the temporary ZIP file
+                print(f"Successfully pulled files for branch '{branch}'")
+                print(f"Files extracted to: {extract_path}")
+            else:
+                print(f"Received unexpected content type: {content_type}")
+                print("Response content:", response.text[:200])  # Print first 200 characters
         else:
-            print("Failed to pull changes:", response.json())
+            print(f"Failed to pull changes. Status code: {response.status_code}")
+            print("Response content:", response.text[:200])  # Print first 200 characters
 
 def main():
-    # Replace with your ngrok URL
     SERVER_URL = "http://127.0.0.1:8888"
     client = VCSClient(SERVER_URL)
 
@@ -126,16 +159,14 @@ def main():
         print("4. Merge branch")
         print("5. List branches")
         print("6. Clone repository")
-        print("7. Pull changes")
+        print("7. Pull all changes")
         print("8. Exit")
 
         choice = input("\nEnter your choice (1-8): ")
 
         if choice == '1':
-            filename = input("Enter filename: ")
-            content = input("Enter content: ")
             branch = input("Enter branch name (press Enter for main): ") or 'main'
-            client.push_changes(filename, content, branch)
+            client.push_changes(branch)
 
         elif choice == '2':
             branch_name = input("Enter new branch name: ")
@@ -158,9 +189,7 @@ def main():
             client.clone_repo()
 
         elif choice == '7':
-            filename = input("Enter filename to pull: ")
-            branch = input("Enter branch name (press Enter for main): ") or 'main'
-            client.pull_changes(filename, branch)
+            client.pull_changes()
 
         elif choice == '8':
             print("Goodbye!")
