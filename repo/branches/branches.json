@@ -1,0 +1,16 @@
+{
+    "main": {
+        "name": "main",
+        "current_commit": null,
+        "commits": [],
+        "files_path": "repo\\branches\\main\\files"
+    },
+    "adi": {
+        "name": "adi",
+        "current_commit": 14,
+        "commits": [
+            14
+        ],
+        "files_path": "repo\\branches\\adi\\files"
+    }
+}

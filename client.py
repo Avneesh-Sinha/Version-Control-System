@@ -115,7 +115,7 @@ class VCSClient:
 
 def main():
     # Replace with your ngrok URL
-    SERVER_URL = "https://c5a6-103-211-18-119.ngrok-free.app"
+    SERVER_URL = "http://127.0.0.1:8888"
     client = VCSClient(SERVER_URL)
 
     while True:
