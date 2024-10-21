@@ -12,10 +12,13 @@ class VCS:
         self.commits_path = os.path.join(self.repo_path, 'commits')
         self.files_path = os.path.join(self.repo_path, 'files')
         self.versions_path = os.path.join(self.repo_path, 'versions')
+        self.branches_path = os.path.join(self.repo_path, 'branches.json')
+        self.current_branch = 'main'
+
         os.makedirs(self.commits_path, exist_ok=True)
         os.makedirs(self.files_path, exist_ok=True)
         os.makedirs(self.versions_path, exist_ok=True)
-        self.load_commits()
+        self.load_branches()
 
     def load_commits(self):
         """Load existing commits from the commits log."""
@@ -66,6 +69,44 @@ class VCS:
             with open(filepath, 'r') as f:
                 return f.readlines()
         return []
+    
+    def load_branches(self):
+        """Load branches and set current branch commit history."""
+        if os.path.exists(self.branches_path):
+            with open(self.branches_path, 'r') as f:
+                self.branches = json.load(f)
+        else:
+            self.branches = {'main': []}
+            self.save_branches()
+
+        self.commits = self.branches.get(self.current_branch, [])
+
+    def save_branches(self):
+        """Save the branches log to a file."""
+        with open(self.branches_path, 'w') as f:
+            json.dump(self.branches, f, indent=4)
+
+    def switch_branch(self, branch_name):
+        """Switch to another branch."""
+        if branch_name not in self.branches:
+            print(f"Branch '{branch_name}' does not exist.")
+            return
+
+        # Save the current branch's commit history before switching
+        self.branches[self.current_branch] = self.commits
+        self.current_branch = branch_name
+        self.commits = self.branches[branch_name]
+        print(f"Switched to branch '{branch_name}'.")
+
+    def create_branch(self, branch_name):
+        """Create a new branch."""
+        if branch_name in self.branches:
+            print(f"Branch '{branch_name}' already exists.")
+            return
+
+        self.branches[branch_name] = self.branches[self.current_branch].copy()  # Copy the current branch's history
+        self.save_branches()
+        print(f"Branch '{branch_name}' created.")
 
     def commit(self, message):
         """Create a new commit with a message."""
@@ -105,6 +146,16 @@ class VCS:
         self.commits.append(commit_data)
         self.save_commits()
         print(f"Commit {commit_data['id']} created: {message}")
+
+        # Save commits to the current branch
+        self.branches[self.current_branch] = self.commits
+        self.save_branches()
+
+    def save_commits(self):
+        """Save the current branch's commits to the file."""
+        branch_commits_file = os.path.join(self.commits_path, f'{self.current_branch}_commits.json')
+        with open(branch_commits_file, 'w') as f:
+            json.dump(self.commits, f, indent=4)
 
     def generate_diff(self, old_content, new_content):
             """Generate a diff between two versions of file content."""
@@ -183,4 +234,3 @@ class VCS:
 
 # Example usage
 vcs = VCS()
-vcs.view_history()

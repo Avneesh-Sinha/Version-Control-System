@@ -1,0 +1,18 @@
+[
+    {
+        "id": 1,
+        "timestamp": "2024-10-21T21:05:43.613553",
+        "message": "Updated example.txt on branch 'main' from client.",
+        "snapshot": {
+            "example.txt": "2850606d8baf9efb86f0a233e33e4debfc300f5898dfc081682c857b41a78428"
+        },
+        "diff_log": {
+            "example.txt": [
+                "--- ",
+                "+++ ",
+                "@@ -0,0 +1 @@",
+                "+Updated content from client to branch 'main'."
+            ]
+        }
+    }
+]
