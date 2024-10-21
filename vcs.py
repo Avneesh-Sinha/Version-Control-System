@@ -87,16 +87,46 @@ class VCS:
             json.dump(self.branches, f, indent=4)
 
     def switch_branch(self, branch_name):
-        """Switch to another branch."""
-        if branch_name not in self.branches:
-            print(f"Branch '{branch_name}' does not exist.")
-            return
-
-        # Save the current branch's commit history before switching
-        self.branches[self.current_branch] = self.commits
+        """Switch to another branch or create a new one, and update working directory files."""
+        # Save the current state of the current branch before switching
+        self.save_commits()
+        
+        # Check if the branch exists
+        branch_file = os.path.join(self.branches_path, f"{branch_name}.json")
+        if not os.path.exists(branch_file):
+            # Create a new branch if it doesn't exist yet
+            print(f"Branch '{branch_name}' does not exist. Creating it now.")
+            open(branch_file, 'w').close()  # create an empty branch file
+        
+        # Switch to the new branch
         self.current_branch = branch_name
-        self.commits = self.branches[branch_name]
-        print(f"Switched to branch '{branch_name}'.")
+        self.load_commits()
+        
+        # Update working directory files based on the latest commit in the new branch
+        if self.commits:
+            last_commit = self.commits[-1]
+            print(f"Restoring files from branch '{branch_name}', commit ID: {last_commit['id']}.")
+            # Clear the current working directory
+            self.clear_working_directory()
+
+            # Restore files from the last commit in the new branch
+            for filename, file_hash in last_commit['snapshot'].items():
+                self.restore_version(filename, file_hash)
+        else:
+            print(f"Branch '{branch_name}' is empty. No files to restore.")
+
+    def clear_working_directory(self):
+        """Remove all files in the current working directory (files path)."""
+        for filename in os.listdir(self.files_path):
+            filepath = os.path.join(self.files_path, filename)
+            try:
+                if os.path.isfile(filepath) or os.path.islink(filepath):
+                    os.unlink(filepath)  # Remove the file
+                elif os.path.isdir(filepath):
+                    shutil.rmtree(filepath)  # Remove the directory
+            except Exception as e:
+                print(f'Failed to delete {filepath}. Reason: {e}')
+
 
     def create_branch(self, branch_name):
         """Create a new branch."""

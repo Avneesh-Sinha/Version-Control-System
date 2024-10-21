@@ -74,7 +74,7 @@ if __name__ == "__main__":
         create_branch(branch)
     
     # Push changes to the specified branch
-    push_changes('example.txt', f"Updated content from client to branch '{branch}'.", branch)
+    # push_changes('example.txt', f"Updated content from client to branch '{branch}'.", branch)
     
     # Cloning the repository
     clone_repo()
