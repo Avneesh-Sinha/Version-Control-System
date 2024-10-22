@@ -197,5 +197,121 @@
             "test.txt": "4908fd6b923beba7462665d34a174f26312cb73dfc1c24ba6d8ce8babc6013e7"
         },
         "diff_log": {}
+    },
+    {
+        "id": 15,
+        "timestamp": "2024-10-23T02:19:40.713963",
+        "message": "Updated example.txt on branch 'sub_main' from client.",
+        "snapshot": {
+            "example.txt": "c4c75aa23f0d636401072d1ea65ae7791f1323f9e9fb0631fdbed2547b477973",
+            "sub_main.txt": "a59f3368a9a1af9b0e904c6810b3fa0d522a057623341d1710bab587a3565bba",
+            "test.txt": "dcd3b7df7715b2380d4d1ce9c61c937e41ef1639c4a4c2b9138b1ac1e9157d7a"
+        },
+        "diff_log": {
+            "example.txt": [
+                "--- ",
+                "+++ ",
+                "@@ -1 +1,2 @@",
+                "-Changed file content from laptop.",
+                "+Changed file content from laptop.\n",
+                "+Changed file from GUI."
+            ],
+            "test.txt": [
+                "--- ",
+                "+++ ",
+                "@@ -1 +1,2 @@",
+                "-for testing gui.",
+                "+for testing gui.\n",
+                "+bleh"
+            ]
+        }
+    },
+    {
+        "id": 16,
+        "timestamp": "2024-10-23T02:19:40.821874",
+        "message": "Updated sub_main.txt on branch 'sub_main' from client.",
+        "snapshot": {
+            "example.txt": "c4c75aa23f0d636401072d1ea65ae7791f1323f9e9fb0631fdbed2547b477973",
+            "sub_main.txt": "a59f3368a9a1af9b0e904c6810b3fa0d522a057623341d1710bab587a3565bba",
+            "test.txt": "dcd3b7df7715b2380d4d1ce9c61c937e41ef1639c4a4c2b9138b1ac1e9157d7a"
+        },
+        "diff_log": {}
+    },
+    {
+        "id": 17,
+        "timestamp": "2024-10-23T02:19:40.928962",
+        "message": "Updated test.txt on branch 'sub_main' from client.",
+        "snapshot": {
+            "example.txt": "c4c75aa23f0d636401072d1ea65ae7791f1323f9e9fb0631fdbed2547b477973",
+            "sub_main.txt": "a59f3368a9a1af9b0e904c6810b3fa0d522a057623341d1710bab587a3565bba",
+            "test.txt": "dcd3b7df7715b2380d4d1ce9c61c937e41ef1639c4a4c2b9138b1ac1e9157d7a"
+        },
+        "diff_log": {}
+    },
+    {
+        "id": 18,
+        "timestamp": "2024-10-23T02:20:37.501670",
+        "message": "Updated example.txt on branch 'sub_main' from client.",
+        "snapshot": {
+            "example.txt": "c4c75aa23f0d636401072d1ea65ae7791f1323f9e9fb0631fdbed2547b477973",
+            "sub_main.txt": "a59f3368a9a1af9b0e904c6810b3fa0d522a057623341d1710bab587a3565bba",
+            "test.txt": "dcd3b7df7715b2380d4d1ce9c61c937e41ef1639c4a4c2b9138b1ac1e9157d7a"
+        },
+        "diff_log": {}
+    },
+    {
+        "id": 19,
+        "timestamp": "2024-10-23T02:20:37.610630",
+        "message": "Updated sub_main.txt on branch 'sub_main' from client.",
+        "snapshot": {
+            "example.txt": "c4c75aa23f0d636401072d1ea65ae7791f1323f9e9fb0631fdbed2547b477973",
+            "sub_main.txt": "a59f3368a9a1af9b0e904c6810b3fa0d522a057623341d1710bab587a3565bba",
+            "test.txt": "dcd3b7df7715b2380d4d1ce9c61c937e41ef1639c4a4c2b9138b1ac1e9157d7a"
+        },
+        "diff_log": {}
+    },
+    {
+        "id": 20,
+        "timestamp": "2024-10-23T02:20:37.717440",
+        "message": "Updated test.txt on branch 'sub_main' from client.",
+        "snapshot": {
+            "example.txt": "c4c75aa23f0d636401072d1ea65ae7791f1323f9e9fb0631fdbed2547b477973",
+            "sub_main.txt": "a59f3368a9a1af9b0e904c6810b3fa0d522a057623341d1710bab587a3565bba",
+            "test.txt": "dcd3b7df7715b2380d4d1ce9c61c937e41ef1639c4a4c2b9138b1ac1e9157d7a"
+        },
+        "diff_log": {}
+    },
+    {
+        "id": 21,
+        "timestamp": "2024-10-23T02:20:57.685958",
+        "message": "Updated example.txt on branch 'sub_main' from client.",
+        "snapshot": {
+            "example.txt": "c4c75aa23f0d636401072d1ea65ae7791f1323f9e9fb0631fdbed2547b477973",
+            "sub_main.txt": "a59f3368a9a1af9b0e904c6810b3fa0d522a057623341d1710bab587a3565bba",
+            "test.txt": "dcd3b7df7715b2380d4d1ce9c61c937e41ef1639c4a4c2b9138b1ac1e9157d7a"
+        },
+        "diff_log": {}
+    },
+    {
+        "id": 22,
+        "timestamp": "2024-10-23T02:20:57.794249",
+        "message": "Updated sub_main.txt on branch 'sub_main' from client.",
+        "snapshot": {
+            "example.txt": "c4c75aa23f0d636401072d1ea65ae7791f1323f9e9fb0631fdbed2547b477973",
+            "sub_main.txt": "a59f3368a9a1af9b0e904c6810b3fa0d522a057623341d1710bab587a3565bba",
+            "test.txt": "dcd3b7df7715b2380d4d1ce9c61c937e41ef1639c4a4c2b9138b1ac1e9157d7a"
+        },
+        "diff_log": {}
+    },
+    {
+        "id": 23,
+        "timestamp": "2024-10-23T02:20:57.902656",
+        "message": "Updated test.txt on branch 'sub_main' from client.",
+        "snapshot": {
+            "example.txt": "c4c75aa23f0d636401072d1ea65ae7791f1323f9e9fb0631fdbed2547b477973",
+            "sub_main.txt": "a59f3368a9a1af9b0e904c6810b3fa0d522a057623341d1710bab587a3565bba",
+            "test.txt": "dcd3b7df7715b2380d4d1ce9c61c937e41ef1639c4a4c2b9138b1ac1e9157d7a"
+        },
+        "diff_log": {}
     }
 ]

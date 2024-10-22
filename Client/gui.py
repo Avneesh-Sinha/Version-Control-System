@@ -380,7 +380,6 @@ class GitClientGUI(QMainWindow):
         # Iterate through all files in the 'files' directory
         for filename in os.listdir('files'):
             file_path = os.path.join('files', filename)
-            print("check")
             # Skip if it's not a file
             if not os.path.isfile(file_path):
                 continue
@@ -400,32 +399,6 @@ class GitClientGUI(QMainWindow):
                 self.refresh_files()
         else:
             self.show_error("Failed to push changes")
-        # current_branch = self.branch_combo.currentText()
-        # if not current_branch:
-        #     self.show_error("Please select a branch")
-        #     return
-
-        # content = self.content_edit.toPlainText()
-        # selected_items = self.file_list.selectedItems()
-        # if not selected_items:
-        #     self.show_error("Please select a file")
-        #     return
-
-        # filename = selected_items[0].text()
-        # try:
-        #     data = {
-        #         'filename': filename,
-        #         'content': content,
-        #         'branch': current_branch
-        #     }
-        #     response = requests.post(f"{SERVER_URL}/push", json=data)
-        #     if response.status_code == 200:
-        #         self.show_message("Success", "Changes pushed successfully")
-        #         self.refresh_files()
-        #     else:
-        #         self.show_error("Failed to push changes")
-        # except Exception as e:
-        #     self.show_error(f"Error pushing changes: {str(e)}")
 
     def update_branch_info(self):
         """Update the information displayed for selected branches"""

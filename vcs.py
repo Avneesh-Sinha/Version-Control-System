@@ -59,7 +59,7 @@ class VCS:
                 content = vf.read()
             with open(filepath, 'wb') as f:
                 f.write(content)
-            print(f"Restored '{filename}' to version with hash {file_hash}.")
+            # print(f"Restored '{filename}' to version with hash {file_hash}.")
         else:
             print(f"Version with hash {file_hash} not found.")
 

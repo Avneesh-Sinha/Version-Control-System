@@ -95,5 +95,56 @@
             "sub_main.txt": "a59f3368a9a1af9b0e904c6810b3fa0d522a057623341d1710bab587a3565bba"
         },
         "diff_log": {}
+    },
+    {
+        "message": "Merged branch 'main' into 'test_1'",
+        "snapshot": {
+            "example.txt": "c4c75aa23f0d636401072d1ea65ae7791f1323f9e9fb0631fdbed2547b477973",
+            "sub_main.txt": "a59f3368a9a1af9b0e904c6810b3fa0d522a057623341d1710bab587a3565bba",
+            "test.txt": "4908fd6b923beba7462665d34a174f26312cb73dfc1c24ba6d8ce8babc6013e7"
+        },
+        "timestamp": "2024-10-23T02:05:28.769911"
+    },
+    {
+        "id": 9,
+        "timestamp": "2024-10-23T02:15:40.612005",
+        "message": "Updated example.txt on branch 'test_1' from client.",
+        "snapshot": {
+            "example.txt": "c4c75aa23f0d636401072d1ea65ae7791f1323f9e9fb0631fdbed2547b477973",
+            "sub_main.txt": "a59f3368a9a1af9b0e904c6810b3fa0d522a057623341d1710bab587a3565bba",
+            "test.txt": "4908fd6b923beba7462665d34a174f26312cb73dfc1c24ba6d8ce8babc6013e7"
+        },
+        "diff_log": {}
+    },
+    {
+        "id": 10,
+        "timestamp": "2024-10-23T02:15:40.720596",
+        "message": "Updated sub_main.txt on branch 'test_1' from client.",
+        "snapshot": {
+            "example.txt": "c4c75aa23f0d636401072d1ea65ae7791f1323f9e9fb0631fdbed2547b477973",
+            "sub_main.txt": "a59f3368a9a1af9b0e904c6810b3fa0d522a057623341d1710bab587a3565bba",
+            "test.txt": "4908fd6b923beba7462665d34a174f26312cb73dfc1c24ba6d8ce8babc6013e7"
+        },
+        "diff_log": {}
+    },
+    {
+        "id": 11,
+        "timestamp": "2024-10-23T02:15:40.833796",
+        "message": "Updated test.txt on branch 'test_1' from client.",
+        "snapshot": {
+            "example.txt": "c4c75aa23f0d636401072d1ea65ae7791f1323f9e9fb0631fdbed2547b477973",
+            "sub_main.txt": "a59f3368a9a1af9b0e904c6810b3fa0d522a057623341d1710bab587a3565bba",
+            "test.txt": "dcd3b7df7715b2380d4d1ce9c61c937e41ef1639c4a4c2b9138b1ac1e9157d7a"
+        },
+        "diff_log": {
+            "test.txt": [
+                "--- ",
+                "+++ ",
+                "@@ -1 +1,2 @@",
+                "-for testing gui.",
+                "+for testing gui.\n",
+                "+bleh"
+            ]
+        }
     }
 ]
