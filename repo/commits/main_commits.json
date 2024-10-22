@@ -14,5 +14,22 @@
                 "+Updated content from client to branch 'main'."
             ]
         }
+    },
+    {
+        "id": 2,
+        "timestamp": "2024-10-23T00:09:12.753495",
+        "message": "Updated example.txt on branch 'main' from client.",
+        "snapshot": {
+            "example.txt": "f1dd210088a19bf5c1ff32f70af2a36513412f94888108ce24c2babc37445cd1"
+        },
+        "diff_log": {
+            "example.txt": [
+                "--- ",
+                "+++ ",
+                "@@ -1 +1 @@",
+                "-Updated content from client to branch 'main'.",
+                "+Change content directly from the client file."
+            ]
+        }
     }
 ]
