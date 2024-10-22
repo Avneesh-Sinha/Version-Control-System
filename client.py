@@ -4,19 +4,38 @@ import os
 
 SERVER_URL = "https://0537-103-211-18-24.ngrok-free.app"  # Replace with your ngrok URL
 
-def push_changes(filename, content, branch):
+def push_changes(branch):
     """
     Push changes to a specified branch.
     """
     url = f"{SERVER_URL}/push"
-    data = {'filename': filename, 'content': content, 'branch': branch}
-    
-    response = requests.post(url, json=data)
-    
-    if response.status_code == 200:
-        print(f"Changes committed to branch '{branch}' successfully.")
-    else:
-        print("Failed to commit changes:", response.json())
+
+    if not os.path.exists('files'):
+        print("No 'files' directory found. Please create it and add files to push.")
+        return
+
+    # Iterate through all files in the 'files' directory
+    for filename in os.listdir('files'):
+        file_path = os.path.join('files', filename)
+        print("check")
+        # Skip if it's not a file
+        if not os.path.isfile(file_path):
+            continue
+        
+        # Read the content of the file
+        with open(file_path, 'r') as f:
+            content = f.read()
+        
+        # Prepare data to push
+        data = {'filename': filename, 'content': content, 'branch': branch}
+        
+        # Send POST request to push changes
+        response = requests.post(url, json=data)
+        
+        if response.status_code == 200:
+            print(f"Changes committed to branch '{branch}' for file '{filename}' successfully.")
+        else:
+            print(f"Failed to commit changes for file '{filename}':", response.json())
 
 def clone_repo():
     """
@@ -54,7 +73,7 @@ def pull_changes(branch):
         # Create or update each file locally
         for filename, content in files.items():
             filepath = os.path.join('files', filename)
-            with open(filename, 'w') as f:
+            with open(filepath, 'w') as f:
                 f.write(content)
             print(f"File '{filename}' updated/created successfully from branch '{branch}'.")
 
@@ -102,3 +121,4 @@ if __name__ == "__main__":
     
     # Pulling changes from the specified branch
     pull_changes(branch)
+    # push_changes(branch)
