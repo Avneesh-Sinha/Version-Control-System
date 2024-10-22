@@ -32,6 +32,23 @@
                     "+Change content directly from the client file."
                 ]
             }
+        },
+        {
+            "id": 3,
+            "timestamp": "2024-10-23T00:24:18.877706",
+            "message": "Updated example.txt on branch 'main' from client.",
+            "snapshot": {
+                "example.txt": "be2c603bb9853e82ff463067387650f74f3d2b7a6e1b5357b37788658c46dbfa"
+            },
+            "diff_log": {
+                "example.txt": [
+                    "--- ",
+                    "+++ ",
+                    "@@ -1 +1 @@",
+                    "-Change content directly from the client file.",
+                    "+Changed file content from laptop."
+                ]
+            }
         }
     ],
     "sub_main": [
@@ -151,6 +168,47 @@
                     "@@ -1 +1 @@",
                     "-Updated content 4 from client to branch 'sub_main'.",
                     "+Update content pushed from client."
+                ]
+            }
+        },
+        {
+            "message": "Merged branch 'main' into 'sub_main'",
+            "snapshot": {
+                "example.txt": "65c8463fcbffe11e3d75dccde0f3a037b1d051ad078271bbb57aa966c740ce63"
+            },
+            "timestamp": "2024-10-23T00:37:01.220140"
+        },
+        {
+            "id": 10,
+            "timestamp": "2024-10-23T00:39:49.049183",
+            "message": "Updated example.txt on branch 'sub_main' from client.",
+            "snapshot": {
+                "example.txt": "be2c603bb9853e82ff463067387650f74f3d2b7a6e1b5357b37788658c46dbfa"
+            },
+            "diff_log": {
+                "example.txt": [
+                    "--- ",
+                    "+++ ",
+                    "@@ -1 +1 @@",
+                    "-Update content pushed from client.",
+                    "+Changed file content from laptop."
+                ]
+            }
+        },
+        {
+            "id": 11,
+            "timestamp": "2024-10-23T00:39:49.163730",
+            "message": "Updated sub_main.txt on branch 'sub_main' from client.",
+            "snapshot": {
+                "example.txt": "be2c603bb9853e82ff463067387650f74f3d2b7a6e1b5357b37788658c46dbfa",
+                "sub_main.txt": "a59f3368a9a1af9b0e904c6810b3fa0d522a057623341d1710bab587a3565bba"
+            },
+            "diff_log": {
+                "sub_main.txt": [
+                    "--- ",
+                    "+++ ",
+                    "@@ -0,0 +1 @@",
+                    "+file in sub_main branch"
                 ]
             }
         }

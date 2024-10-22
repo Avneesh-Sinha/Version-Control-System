@@ -28,11 +28,11 @@ def push_changes():
         return jsonify({"error": f"Branch '{branch}' does not exist."}), 404
 
     # Prompt server administrator for manual authorization
-    print(f"Client is trying to push changes to branch '{branch}'. Authorize the push? (yes/no):")
-    user_input = input().strip().lower()
+    # print(f"Client is trying to push changes to branch '{branch}'. Authorize the push? (yes/no):")
+    # user_input = input().strip().lower()
 
-    if user_input != "yes":
-        return jsonify({"message": "Push denied by server."}), 403
+    # if user_input != "yes":
+    #     return jsonify({"message": "Push denied by server."}), 403
 
     # Switch to the target branch
     vcs.switch_branch(branch)
@@ -105,6 +105,21 @@ def create_branch():
         return jsonify({"message": f"Branch '{branch_name}' created successfully."}), 200
     else:
         return jsonify({"error": f"Branch '{branch_name}' already exists."}), 400
+
+@app.route('/merge', methods=['POST'])
+def merge():
+    """
+    Merge source_branch into target_branch.
+    """
+    data = request.get_json()
+    source_branch = data.get('source_branch')
+    target_branch = data.get('target_branch')
+
+    try:
+        vcs.merge(source_branch, target_branch)
+        return jsonify({"message": f"Successfully merged {source_branch} into {target_branch}."}), 200
+    except ValueError as e:
+        return jsonify({"error": str(e)}), 400
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8888)  # Adjust port as needed

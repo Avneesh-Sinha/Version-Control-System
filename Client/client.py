@@ -68,25 +68,43 @@ def pull_changes(branch):
             print(f"No files found for branch '{branch}'.")
             return
 
-        os.makedirs('files', exist_ok=True)
+        # Ensure 'files' folder exists
+        target_dir = 'files'
+        os.makedirs(target_dir, exist_ok=True)
 
-        # Create or update each file locally
-        for filename, content in files.items():
-            filepath = os.path.join('files', filename)
-            with open(filepath, 'w') as f:
-                f.write(content)
-            print(f"File '{filename}' updated/created successfully from branch '{branch}'.")
+        # Get the current set of files in the 'files' directory
+        local_files = set(os.listdir(target_dir))
+
+        # Set of files pulled from the server (branch snapshot)
+        pulled_files = set(files.keys())
+
+        # Remove files that exist locally but are not present in the pulled branch
+        for filename in local_files - pulled_files:
+            file_path = os.path.join(target_dir, filename)
+            os.remove(file_path)
+            print(f"Removed '{filename}' (not in branch '{branch}').")
+
+        # Process and update pulled files
+        for filename in pulled_files:
+            file_path = os.path.join(target_dir, filename)
+            new_content = files[filename]
+
+            # Only write file if content has changed (to minimize file writes)
+            if os.path.exists(file_path):
+                with open(file_path, 'r') as f:
+                    current_content = f.read()
+                if current_content == new_content:
+                    print(f"'{filename}' is up-to-date.")
+                    continue
+
+            # Write updated/new content
+            with open(file_path, 'w') as f:
+                f.write(new_content)
+            print(f"Updated/created '{filename}' with content from branch '{branch}'.")
 
     else:
         error_message = response.json().get('error', 'Unknown error occurred')
         print(f"Failed to pull files: {error_message}")
-    
-    # if response.status_code == 200:
-    #     with open(filename, 'wb') as f:
-    #         f.write(response.content)
-    #     print(f"{filename} has been updated with the latest version from branch '{branch}'.")
-    # else:
-    #     print("Failed to pull changes:", response.json())
 
 def create_branch(branch_name):
     """
@@ -101,6 +119,20 @@ def create_branch(branch_name):
         print(f"Branch '{branch_name}' created successfully.")
     else:
         print("Failed to create branch:", response.json())
+
+def merge_branches(source_branch, target_branch):
+    """
+    Request to merge source_branch into target_branch.
+    """
+    url = f"{SERVER_URL}/merge"
+    data = {'source_branch': source_branch, 'target_branch': target_branch}
+    
+    response = requests.post(url, json=data)
+    
+    if response.status_code == 200:
+        print(f"Successfully merged '{source_branch}' into '{target_branch}'.")
+    else:
+        print("Merge failed:", response.json())
 
 # Example usage
 if __name__ == "__main__":
@@ -122,3 +154,4 @@ if __name__ == "__main__":
     # Pulling changes from the specified branch
     pull_changes(branch)
     # push_changes(branch)
+    # merge_branches("sub_main", "main")

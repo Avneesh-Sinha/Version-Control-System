@@ -249,5 +249,62 @@ class VCS:
         # Apply the new commits here, you could also check for conflicts
         print(f"Pulled changes: {remote_commits}")
 
+    def merge(self, source_branch, target_branch):
+        """
+        Merge changes from source_branch into target_branch.
+        """
+        # Ensure both branches exist
+        if source_branch not in self.branches:
+            raise ValueError(f"Source branch '{source_branch}' does not exist.")
+        if target_branch not in self.branches:
+            raise ValueError(f"Target branch '{target_branch}' does not exist.")
+
+        # Switch to the target branch
+        self.switch_branch(target_branch)
+
+        # Get snapshots of both branches
+        target_snapshot = self.branches[target_branch][-1]['snapshot']
+        source_snapshot = self.branches[source_branch][-1]['snapshot']
+
+        # Identify conflicting files (files modified in both branches)
+        conflicting_files = []
+        merged_files = {}
+
+        for filename, target_hash in target_snapshot.items():
+            source_hash = source_snapshot.get(filename)
+
+            # If file exists in both branches and has different content, it's a conflict
+            if source_hash and source_hash != target_hash:
+                conflicting_files.append(filename)
+            else:
+                # Use target file or new file from source
+                merged_files[filename] = target_hash or source_hash
+
+        # Merge files that have no conflicts
+        for filename, source_hash in source_snapshot.items():
+            if filename not in merged_files:
+                merged_files[filename] = source_hash
+
+        if conflicting_files:
+            print("Merge conflicts detected in the following files:")
+            for conflict in conflicting_files:
+                print(f"- {conflict}")
+            
+            # Resolve conflicts (in a real system, you would handle conflicts here)
+            # For simplicity, we'll choose the target branch's version for now.
+            print("Resolving conflicts by keeping target branch versions.")
+            for conflict in conflicting_files:
+                merged_files[conflict] = target_snapshot[conflict]
+
+        # Update the snapshot of the target branch
+        self.branches[target_branch].append({
+            'message': f"Merged branch '{source_branch}' into '{target_branch}'",
+            'snapshot': merged_files,
+            'timestamp': datetime.now().isoformat()
+        })
+        
+        print(f"Branch '{source_branch}' merged into '{target_branch}' successfully.")
+
+
 # Example usage
 vcs = VCS()
