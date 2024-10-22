@@ -100,7 +100,6 @@ def create_branch():
 
     # Create a new branch
     success = vcs.create_branch(branch_name)
-    
     if success:
         return jsonify({"message": f"Branch '{branch_name}' created successfully."}), 200
     else:

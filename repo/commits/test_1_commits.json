@@ -78,8 +78,8 @@
     },
     {
         "id": 6,
-        "timestamp": "2024-10-23T01:57:18.937985",
-        "message": "Updated example.txt on branch 'main' from client.",
+        "timestamp": "2024-10-23T01:41:48.408485",
+        "message": "Updated sub_main.txt on branch 'test_1' from client.",
         "snapshot": {
             "example.txt": "c4c75aa23f0d636401072d1ea65ae7791f1323f9e9fb0631fdbed2547b477973",
             "sub_main.txt": "a59f3368a9a1af9b0e904c6810b3fa0d522a057623341d1710bab587a3565bba"
@@ -88,60 +88,12 @@
     },
     {
         "id": 7,
-        "timestamp": "2024-10-23T01:58:30.845739",
-        "message": "Updated example.txt on branch 'main' from client.",
+        "timestamp": "2024-10-23T01:59:49.282729",
+        "message": "Updated example.txt on branch 'test_1' from client.",
         "snapshot": {
             "example.txt": "c4c75aa23f0d636401072d1ea65ae7791f1323f9e9fb0631fdbed2547b477973",
             "sub_main.txt": "a59f3368a9a1af9b0e904c6810b3fa0d522a057623341d1710bab587a3565bba"
         },
         "diff_log": {}
-    },
-    {
-        "id": 8,
-        "timestamp": "2024-10-23T01:59:41.338769",
-        "message": "Updated example.txt on branch 'main' from client.",
-        "snapshot": {
-            "example.txt": "c4c75aa23f0d636401072d1ea65ae7791f1323f9e9fb0631fdbed2547b477973",
-            "sub_main.txt": "a59f3368a9a1af9b0e904c6810b3fa0d522a057623341d1710bab587a3565bba"
-        },
-        "diff_log": {}
-    },
-    {
-        "id": 9,
-        "timestamp": "2024-10-23T02:04:00.829652",
-        "message": "Updated example.txt on branch 'main' from client.",
-        "snapshot": {
-            "example.txt": "c4c75aa23f0d636401072d1ea65ae7791f1323f9e9fb0631fdbed2547b477973",
-            "sub_main.txt": "a59f3368a9a1af9b0e904c6810b3fa0d522a057623341d1710bab587a3565bba"
-        },
-        "diff_log": {}
-    },
-    {
-        "id": 10,
-        "timestamp": "2024-10-23T02:04:00.934849",
-        "message": "Updated sub_main.txt on branch 'main' from client.",
-        "snapshot": {
-            "example.txt": "c4c75aa23f0d636401072d1ea65ae7791f1323f9e9fb0631fdbed2547b477973",
-            "sub_main.txt": "a59f3368a9a1af9b0e904c6810b3fa0d522a057623341d1710bab587a3565bba"
-        },
-        "diff_log": {}
-    },
-    {
-        "id": 11,
-        "timestamp": "2024-10-23T02:04:01.044851",
-        "message": "Updated test.txt on branch 'main' from client.",
-        "snapshot": {
-            "example.txt": "c4c75aa23f0d636401072d1ea65ae7791f1323f9e9fb0631fdbed2547b477973",
-            "sub_main.txt": "a59f3368a9a1af9b0e904c6810b3fa0d522a057623341d1710bab587a3565bba",
-            "test.txt": "4908fd6b923beba7462665d34a174f26312cb73dfc1c24ba6d8ce8babc6013e7"
-        },
-        "diff_log": {
-            "test.txt": [
-                "--- ",
-                "+++ ",
-                "@@ -0,0 +1 @@",
-                "+for testing gui."
-            ]
-        }
     }
 ]

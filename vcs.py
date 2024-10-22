@@ -113,7 +113,7 @@ class VCS:
         self.branches[self.current_branch] = self.commits
         self.current_branch = branch_name
         self.commits = self.branches[branch_name]
-        print(f"Switched to branch '{branch_name}'.")
+        return f"Switched to branch '{branch_name}'."
 
     def create_branch(self, branch_name):
         """Create a new branch."""
@@ -123,7 +123,7 @@ class VCS:
 
         self.branches[branch_name] = self.branches[self.current_branch].copy()  # Copy the current branch's history
         self.save_branches()
-        print(f"Branch '{branch_name}' created.")
+        return f"Branch '{branch_name}' created."
 
     def commit(self, message):
         """Create a new commit with a message."""

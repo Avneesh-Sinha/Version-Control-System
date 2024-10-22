@@ -158,5 +158,44 @@
                 "+file in sub_main branch"
             ]
         }
+    },
+    {
+        "id": 12,
+        "timestamp": "2024-10-23T01:58:15.213437",
+        "message": "Updated example.txt on branch 'sub_main' from client.",
+        "snapshot": {
+            "example.txt": "be2c603bb9853e82ff463067387650f74f3d2b7a6e1b5357b37788658c46dbfa",
+            "sub_main.txt": "a59f3368a9a1af9b0e904c6810b3fa0d522a057623341d1710bab587a3565bba"
+        },
+        "diff_log": {}
+    },
+    {
+        "id": 13,
+        "timestamp": "2024-10-23T02:07:15.673565",
+        "message": "Updated example.txt on branch 'sub_main' from client.",
+        "snapshot": {
+            "example.txt": "be2c603bb9853e82ff463067387650f74f3d2b7a6e1b5357b37788658c46dbfa",
+            "sub_main.txt": "a59f3368a9a1af9b0e904c6810b3fa0d522a057623341d1710bab587a3565bba",
+            "test.txt": "4908fd6b923beba7462665d34a174f26312cb73dfc1c24ba6d8ce8babc6013e7"
+        },
+        "diff_log": {
+            "test.txt": [
+                "--- ",
+                "+++ ",
+                "@@ -0,0 +1 @@",
+                "+for testing gui."
+            ]
+        }
+    },
+    {
+        "id": 14,
+        "timestamp": "2024-10-23T02:07:15.783500",
+        "message": "Updated sub_main.txt on branch 'sub_main' from client.",
+        "snapshot": {
+            "example.txt": "be2c603bb9853e82ff463067387650f74f3d2b7a6e1b5357b37788658c46dbfa",
+            "sub_main.txt": "a59f3368a9a1af9b0e904c6810b3fa0d522a057623341d1710bab587a3565bba",
+            "test.txt": "4908fd6b923beba7462665d34a174f26312cb73dfc1c24ba6d8ce8babc6013e7"
+        },
+        "diff_log": {}
     }
 ]
