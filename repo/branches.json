@@ -49,6 +49,33 @@
                     "+Changed file content from laptop."
                 ]
             }
+        },
+        {
+            "message": "Merged branch 'sub_main' into 'main'",
+            "snapshot": {
+                "example.txt": "be2c603bb9853e82ff463067387650f74f3d2b7a6e1b5357b37788658c46dbfa",
+                "sub_main.txt": "a59f3368a9a1af9b0e904c6810b3fa0d522a057623341d1710bab587a3565bba"
+            },
+            "timestamp": "2024-10-23T00:50:59.612190"
+        },
+        {
+            "id": 5,
+            "timestamp": "2024-10-23T01:06:34.373020",
+            "message": "Updated example.txt on branch 'main' from client.",
+            "snapshot": {
+                "example.txt": "c4c75aa23f0d636401072d1ea65ae7791f1323f9e9fb0631fdbed2547b477973",
+                "sub_main.txt": "a59f3368a9a1af9b0e904c6810b3fa0d522a057623341d1710bab587a3565bba"
+            },
+            "diff_log": {
+                "example.txt": [
+                    "--- ",
+                    "+++ ",
+                    "@@ -1 +1,2 @@",
+                    "-Changed file content from laptop.",
+                    "+Changed file content from laptop.\n",
+                    "+Changed file from GUI."
+                ]
+            }
         }
     ],
     "sub_main": [
