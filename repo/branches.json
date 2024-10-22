@@ -50,6 +50,75 @@
                     "+Updated content from client to branch 'sub_main'."
                 ]
             }
+        },
+        {
+            "id": 3,
+            "timestamp": "2024-10-22T20:22:19.143893",
+            "message": "Updated example.txt on branch 'sub_main' from client.",
+            "snapshot": {
+                "example.txt": "03dbbd44a102d36fca05a93c8dc58b29d15d6e575a00c215eee6e74ed6d55f24"
+            },
+            "diff_log": {}
+        },
+        {
+            "id": 4,
+            "timestamp": "2024-10-22T20:56:12.992682",
+            "message": "Updated example.txt on branch 'sub_main' from client.",
+            "snapshot": {
+                "example.txt": "57d5d6c47afddb9a3acad403db0060a1c9d0e3b219629b5bf5a1d69f2812b700"
+            },
+            "diff_log": {
+                "example.txt": [
+                    "--- ",
+                    "+++ ",
+                    "@@ -1 +1 @@",
+                    "-Updated content from client to branch 'sub_main'.",
+                    "+Updated content 2 from client to branch 'sub_main'."
+                ]
+            }
+        },
+        {
+            "id": 5,
+            "timestamp": "2024-10-22T20:58:09.346572",
+            "message": "Updated example.txt on branch 'sub_main' from client.",
+            "snapshot": {
+                "example.txt": "57d5d6c47afddb9a3acad403db0060a1c9d0e3b219629b5bf5a1d69f2812b700"
+            },
+            "diff_log": {}
+        },
+        {
+            "id": 6,
+            "timestamp": "2024-10-22T20:59:16.026946",
+            "message": "Updated example.txt on branch 'sub_main' from client.",
+            "snapshot": {
+                "example.txt": "dd727e99c1919f21aa9046386ce2404557e937bc52e656929b4ad5b72a9ebe44"
+            },
+            "diff_log": {
+                "example.txt": [
+                    "--- ",
+                    "+++ ",
+                    "@@ -1 +1 @@",
+                    "-Updated content 2 from client to branch 'sub_main'.",
+                    "+Updated content 3 from client to branch 'sub_main'."
+                ]
+            }
+        },
+        {
+            "id": 7,
+            "timestamp": "2024-10-22T21:00:31.460199",
+            "message": "Updated example.txt on branch 'sub_main' from client.",
+            "snapshot": {
+                "example.txt": "7ca17f87a264d61d55122fbd3e49468500f185088e822defb7e84cf92f7977ac"
+            },
+            "diff_log": {
+                "example.txt": [
+                    "--- ",
+                    "+++ ",
+                    "@@ -1 +1 @@",
+                    "-Updated content 3 from client to branch 'sub_main'.",
+                    "+Updated content 4 from client to branch 'sub_main'."
+                ]
+            }
         }
     ]
 }

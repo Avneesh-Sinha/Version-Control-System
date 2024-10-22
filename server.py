@@ -50,8 +50,8 @@ def clone_repo():
     """
     return jsonify(vcs.branches), 200
 
-@app.route('/pull/<branch>/<filename>', methods=['GET'])
-def pull_changes(branch, filename):
+@app.route('/pull/<branch>', methods=['GET'])
+def pull_changes(branch):
     """
     Pull the latest version of the specified file from a specific branch.
     """
@@ -61,12 +61,30 @@ def pull_changes(branch, filename):
     # Switch to the target branch
     vcs.switch_branch(branch)
 
-    file_path = os.path.join(vcs.files_path, filename)
+    # Get the snapshot for the branch
+    branch_snapshots = vcs.branches.get(branch, {})
     
-    if os.path.exists(file_path):
-        return send_file(file_path, as_attachment=True)
-    else:
-        return jsonify({"error": "File not found"}), 404
+    if not branch_snapshots:
+        return jsonify({"error": f"No files found for branch '{branch}'."}), 404
+
+    # Create a dictionary to hold the file contents
+    files = {}
+    
+    for snapshot in branch_snapshots:
+        for filename, file_hash in snapshot['snapshot'].items():
+            # Get the content of the file based on its hash
+            file_content = vcs.get_file_content_by_hash(file_hash)
+            files[filename] = ''.join(file_content)  # Convert list to string
+
+    # Return the list of all files and their contents in the branch
+    return jsonify(files), 200
+
+    # file_path = os.path.join(vcs.files_path, filename)
+    
+    # if os.path.exists(file_path):
+    #     return send_file(file_path, as_attachment=True)
+    # else:
+    #     return jsonify({"error": "File not found"}), 404
 
 @app.route('/create_branch', methods=['POST'])
 def create_branch():

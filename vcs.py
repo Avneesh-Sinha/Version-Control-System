@@ -70,6 +70,23 @@ class VCS:
                 return f.readlines()
         return []
     
+    def get_file_content_by_hash(self, file_hash):
+        """Retrieve file content based on its hash."""
+        # Create a temporary file path to restore the version
+        temp_filename = f"temp_{file_hash}"
+        self.restore_version(temp_filename, file_hash)  # Restore the version to a temporary file
+
+        # Read the content from the temporary file
+        temp_file_path = os.path.join(self.files_path, temp_filename)
+        content = self.get_file_content(temp_file_path)
+
+        # Clean up the temporary file after reading
+        if os.path.exists(temp_file_path):
+            os.remove(temp_file_path)
+
+        return content if content else None
+
+    
     def load_branches(self):
         """Load branches and set current branch commit history."""
         if os.path.exists(self.branches_path):
