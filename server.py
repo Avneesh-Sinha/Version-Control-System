@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify, send_file
 import os
 import json
+from datetime import datetime
 from vcs import VCS
 
 app = Flask(__name__)
@@ -117,6 +118,17 @@ def merge():
     try:
         vcs.merge(source_branch, target_branch)
         return jsonify({"message": f"Successfully merged {source_branch} into {target_branch}."}), 200
+    except ValueError as e:
+        return jsonify({"error": str(e)}), 400
+    
+@app.route('/chat', methods=['POST'])
+def chat():
+    data = request.get_json()
+    conflicts = data.get("conflicts")
+
+    try:
+        out = vcs.chat(conflicts)
+        return jsonify({"message": out}), 200
     except ValueError as e:
         return jsonify({"error": str(e)}), 400
 

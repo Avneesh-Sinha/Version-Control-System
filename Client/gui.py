@@ -2,18 +2,22 @@ import sys
 from PyQt6.QtWidgets import (QApplication, QMainWindow, QWidget, QVBoxLayout, 
                            QHBoxLayout, QPushButton, QLineEdit, QTextEdit, 
                            QLabel, QComboBox, QFileDialog, QMessageBox, 
-                           QListWidget, QTabWidget, QSplitter, QGroupBox)
+                           QListWidget, QTabWidget, QSplitter, QGroupBox,
+                           QDialog, QListWidgetItem, QSizePolicy)
 from PyQt6.QtCore import Qt, QThread, pyqtSignal
 from PyQt6.QtGui import QFont, QPalette, QColor
 import os
 import requests
-import json
+import re
+import difflib
 
 class GitClientGUI(QMainWindow):
+
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Modern Git Client")
         self.setMinimumSize(900, 600)
+        self.resize(1200, 1000)
         
         # Set the style
         self.setStyleSheet("""
@@ -243,6 +247,13 @@ class GitClientGUI(QMainWindow):
         self.source_branch_combo.currentTextChanged.connect(self.update_branch_info)
         self.target_branch_combo.currentTextChanged.connect(self.update_branch_info)
 
+    def markdown_to_html(self, text):
+        text = re.sub(r'\*\*(.+?)\*\*', r'<b>\1</b>', text)
+        text = re.sub(r'\*(.+?)\*', r'<i>\1</i>', text)
+        text = re.sub(r'`(.+?)`', r'<code>\1</code>', text)
+        text = text.replace("\n", "<br>")
+        return text
+
     def refresh_repo(self):
         try:
             response = requests.get(f"{SERVER_URL}/clone")
@@ -453,7 +464,7 @@ class GitClientGUI(QMainWindow):
                     if file in source_files and file in target_files:
                         if source_files[file] != target_files[file]:
                             self.changes_list.addItem(f"Modified: {file}")
-                            conflicts.append(file)
+                            conflicts.append([file, source_files[file],target_files[file]])
                     elif file in source_files:
                         self.changes_list.addItem(f"Added in source: {file}")
                     else:
@@ -462,6 +473,7 @@ class GitClientGUI(QMainWindow):
                 # Update conflict label
                 if conflicts:
                     self.conflict_label.setText(f"⚠️ Warning: {len(conflicts)} potential conflict(s) detected")
+                    self.show_conflict_panel(conflicts, source_branch, target_branch)
                 else:
                     self.conflict_label.setText("✓ No conflicts detected")
                 
@@ -474,6 +486,105 @@ class GitClientGUI(QMainWindow):
                 self.show_error("Failed to compare branches")
         except Exception as e:
             self.show_error(f"Error comparing branches: {str(e)}")
+
+    def show_conflict_panel(self, conflicts, source_branch, target_branch):
+        """Display a panel with line-by-line conflict details."""
+        dialog = QDialog(self)
+        dialog.setWindowTitle("Conflict Details")
+        dialog.resize(1000, 800)
+        layout = QVBoxLayout(dialog)
+
+        # Add header label
+        layout.addWidget(QLabel(f"Conflicts between {source_branch} and {target_branch}:"))
+
+        tab_widget = QTabWidget()
+
+        for file in conflicts:
+            # Get file contents from both branches
+            source_content = file[1]
+            target_content = file[2]
+
+            # Create a widget for the tab and set up a horizontal layout
+            file_tab = QWidget()
+            file_layout = QHBoxLayout(file_tab)
+
+            # Create two QListWidgets for displaying source and target contents side by side
+            source_list = QListWidget()
+            target_list = QListWidget()
+
+            # Set labels for each side
+            source_list.addItem(QListWidgetItem(f"Source ({source_branch}):"))
+            target_list.addItem(QListWidgetItem(f"Target ({target_branch}):"))
+
+            # Compare line-by-line and add lines to the respective lists
+            diff = difflib.ndiff(
+                source_content.splitlines(keepends=True),
+                target_content.splitlines(keepends=True)
+            )
+
+            added = []
+            removed = []
+            for line in diff:
+                # Process source (original) content
+                if line.startswith('-'):
+                    item = QListWidgetItem(line[1:].strip())
+                    item.setForeground(QColor("red"))  # Mark removed lines in red
+                    source_list.addItem(item)
+                    # Add empty item to target list to align rows
+                    target_list.addItem(QListWidgetItem(""))
+                    removed.append(line.strip())
+
+                # Process target (new) content
+                elif line.startswith('+'):
+                    item = QListWidgetItem(line[1:].strip())
+                    item.setForeground(QColor("green"))  # Mark added lines in green
+                    target_list.addItem(item)
+                    # Add empty item to source list to align rows
+                    source_list.addItem(QListWidgetItem(""))
+                    added.append(line.strip())
+
+                # Process unchanged lines (to align content)
+                elif line.startswith(' '):
+                    source_list.addItem(QListWidgetItem(line[1:].strip()))
+                    target_list.addItem(QListWidgetItem(line[1:].strip()))
+
+            # Horizontal layout to display source and target lists side by side
+            comparison_layout = QHBoxLayout()
+            comparison_layout.addWidget(source_list)
+            comparison_layout.addWidget(target_list)
+
+            # Add the comparison layout to the file tab layout
+            file_layout.addLayout(comparison_layout)
+
+            # Generate the chatbot response for this specific file
+            chatbot_response = requests.post(f"{SERVER_URL}/chat", json={"conflicts":[source_content, target_content]})
+            if chatbot_response.status_code == 200:
+                # Extract the "message" field from the JSON response
+                response_data = chatbot_response.json()
+                message = response_data.get("message")
+            else:
+                # Handle error
+                error_data = chatbot_response.json()
+                print("Error:", error_data.get("error"))
+
+            # Add a QTextEdit for the chatbot response specific to this file
+            response_box = QTextEdit()
+            formatted_response = self.markdown_to_html(message)
+            response_box.setText(formatted_response)
+            response_box.setReadOnly(True)  # Make the response box read-only
+            response_box.setPlaceholderText("Chatbot response based on the conflicts in this file...")
+
+            # Add the response box to the file layout below the comparison
+            file_layout.addWidget(response_box)
+
+            # Set the layout for the file tab and add it to the QTabWidget
+            file_tab.setLayout(file_layout)
+            tab_widget.addTab(file_tab, file[0])
+
+        layout.addWidget(tab_widget)
+
+        dialog.setLayout(layout)
+        dialog.exec()
 
     def cancel_merge(self):
         """Cancel the merge operation"""
@@ -587,6 +698,85 @@ class GitClientGUI(QMainWindow):
             except Exception as e:
                 self.show_error(f"Error during merge: {str(e)}")
 
+    # def merge_branches(self):
+    #     """Merge the selected source branch into the target branch"""
+    #     source_branch = self.source_branch_combo.currentText()
+    #     target_branch = self.target_branch_combo.currentText()
+        
+    #     if source_branch == target_branch:
+    #         self.show_error("Source and target branches must be different")
+    #         return
+
+    #     # Show confirmation dialog
+    #     msg = QMessageBox()
+    #     msg.setIcon(QMessageBox.Icon.Question)
+    #     msg.setText(f"Are you sure you want to merge '{source_branch}' into '{target_branch}'?")
+    #     msg.setInformativeText("This action cannot be undone!")
+    #     msg.setWindowTitle("Confirm Merge")
+    #     msg.setStandardButtons(QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
+    #     msg.setDefaultButton(QMessageBox.StandardButton.No)
+
+    #     if msg.exec() == QMessageBox.StandardButton.Yes:
+    #         try:
+    #             data = {
+    #                 'source_branch': source_branch,
+    #                 'target_branch': target_branch
+    #             }
+    #             print(f"Sending merge request: {data}")  # Debug print
+                
+    #             response = requests.post(f"{SERVER_URL}/merge", json=data)
+    #             response_data = response.json()
+                
+    #             print(f"Received response: {response_data}")  # Debug print
+    #             print(f"Response status code: {response.status_code}")  # Debug print
+                
+    #             if response.status_code == 200:
+    #                 if 'conflicts' in response_data and response_data['conflicts']:
+    #                     print(f"Conflicts detected, opening dialog")  # Debug print
+    #                     conflicts = response_data['conflicts']
+                        
+    #                     # Create and show the dialog
+    #                     dialog = ConflictResolutionDialog(conflicts, self)
+    #                     dialog.show()  # Make sure the dialog is visible
+                        
+    #                     result = dialog.exec()
+    #                     print(f"Dialog result: {result}")  # Debug print
+                        
+    #                     if result == QDialog.DialogCode.Accepted:
+    #                         # Get and print resolutions for debugging
+    #                         resolutions = dialog.get_resolutions()
+    #                         print(f"Resolutions: {resolutions}")  # Debug print
+                            
+    #                         # Send resolved conflicts back to server
+    #                         resolution_data = {
+    #                             'source_branch': source_branch,
+    #                             'target_branch': target_branch,
+    #                             'resolutions': resolutions
+    #                         }
+    #                         resolution_response = requests.post(
+    #                             f"{SERVER_URL}/resolve_conflicts",
+    #                             json=resolution_data
+    #                         )
+                            
+    #                         if resolution_response.status_code == 200:
+    #                             self.show_message("Success", 
+    #                                             "Merge conflicts resolved successfully")
+    #                             self.refresh_repo()
+    #                             self.cancel_merge()
+    #                         else:
+    #                             self.show_error("Failed to apply conflict resolutions")
+    #                 else:
+    #                     self.show_message("Success", 
+    #                                     f"Successfully merged '{source_branch}' into '{target_branch}'")
+    #                     self.refresh_repo()
+    #                     self.cancel_merge()
+    #             else:
+    #                 self.show_error(f"Merge failed: {response_data.get('error', 'Unknown error')}")
+    #         except Exception as e:
+    #             import traceback
+    #             print(f"Error during merge: {str(e)}")  # Debug print
+    #             print(traceback.format_exc())  # Print full stack trace
+    #             self.show_error(f"Error during merge: {str(e)}")
 
     def show_error(self, message):
         QMessageBox.critical(self, "Error", message)
@@ -605,5 +795,5 @@ def main():
     sys.exit(app.exec())
 
 if __name__ == "__main__":
-    SERVER_URL = "https://0537-103-211-18-24.ngrok-free.app"  # Replace with your ngrok URL
+    SERVER_URL = "https://59e2-103-211-18-55.ngrok-free.app"  # Replace with your ngrok URL
     main()

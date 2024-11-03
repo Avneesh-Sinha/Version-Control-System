@@ -2,9 +2,49 @@ import os
 import hashlib
 import json
 from datetime import datetime
+from dataclasses import dataclass
 import shutil
 import requests
 import difflib
+from typing import List, Dict, Tuple
+import google.generativeai as genai
+
+genai.configure(api_key='AIzaSyCH28n91GHM_naGEEDHO7im5T37uQQvnUY')
+
+class GemBot():
+
+    model = genai.GenerativeModel("gemini-1.5-flash")
+    
+    def __init__(self):
+        self.conversation = []
+
+    def system(self, text):
+        self.conversation = []
+        self.conversation.append({'role': 'system', 'content': text})
+
+    def sys_up(self):
+        self.conversation.append(("human", "{user_input}"))
+        self.bind()
+
+    def bind(self):
+        pass  # No need to bind anything for Gemini
+
+    def gen_out(self, text):
+        self.conversation.append({'role': 'user', 'content': text})
+        conv = self.build_conversation()
+        response = self.model.generate_content(conv)
+        output = response.text  # Adjust this based on Gemini's response structure
+        # print(output, '\n')
+        self.conversation.append({'role': 'assistant', 'content': output})
+        # self.sys_up()
+        return output
+
+    def build_conversation(self):
+        return "\n\n".join(f"{msg['role'].capitalize()}: {msg['content']}" for msg in self.conversation)
+
+cb1 = GemBot()
+sys_text = "You are an AI assitant that will receive two pieces of texts that will have conflicts and your task is to give the user suggestions on merging the first text into the second resolving the conflict."
+cb1.system(sys_text)
 
 class VCS:
     def __init__(self, repo_path='repo'):
@@ -305,6 +345,20 @@ class VCS:
         
         print(f"Branch '{source_branch}' merged into '{target_branch}' successfully.")
 
+    def chat(self, conflicts):
+        for i in conflicts:
+            print(i)
+        cb = GemBot()
+        cb.system(sys_text)
+        s = f"""
+        the source file is "{conflicts[0]}"
+        the target file is "{conflicts[1]}"
+        the source file is to be merged into the target file.
+        detect any conflicts that might arise during the merge and give a suggestion to resolve
+        the conflict.
+
+        """
+        return cb.gen_out(s)
 
 # Example usage
 vcs = VCS()

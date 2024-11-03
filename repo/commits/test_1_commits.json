@@ -146,5 +146,47 @@
                 "+bleh"
             ]
         }
+    },
+    {
+        "id": 12,
+        "timestamp": "2024-11-03T22:03:20.306985",
+        "message": "Updated example.txt on branch 'test_1' from client.",
+        "snapshot": {
+            "example.txt": "c4c75aa23f0d636401072d1ea65ae7791f1323f9e9fb0631fdbed2547b477973",
+            "sub_main.txt": "a59f3368a9a1af9b0e904c6810b3fa0d522a057623341d1710bab587a3565bba",
+            "test.txt": "01cd6fa362fa9b75225d34b72a216f80f88bd1feac0475aa224f59211bbdf583"
+        },
+        "diff_log": {
+            "test.txt": [
+                "--- ",
+                "+++ ",
+                "@@ -1,2 +1,2 @@",
+                " for testing gui.\n",
+                "-bleh",
+                "+bleh bleh bleh"
+            ]
+        }
+    },
+    {
+        "id": 13,
+        "timestamp": "2024-11-03T22:03:20.425047",
+        "message": "Updated sub_main.txt on branch 'test_1' from client.",
+        "snapshot": {
+            "example.txt": "c4c75aa23f0d636401072d1ea65ae7791f1323f9e9fb0631fdbed2547b477973",
+            "sub_main.txt": "a59f3368a9a1af9b0e904c6810b3fa0d522a057623341d1710bab587a3565bba",
+            "test.txt": "01cd6fa362fa9b75225d34b72a216f80f88bd1feac0475aa224f59211bbdf583"
+        },
+        "diff_log": {}
+    },
+    {
+        "id": 14,
+        "timestamp": "2024-11-03T22:03:20.544374",
+        "message": "Updated test.txt on branch 'test_1' from client.",
+        "snapshot": {
+            "example.txt": "c4c75aa23f0d636401072d1ea65ae7791f1323f9e9fb0631fdbed2547b477973",
+            "sub_main.txt": "a59f3368a9a1af9b0e904c6810b3fa0d522a057623341d1710bab587a3565bba",
+            "test.txt": "01cd6fa362fa9b75225d34b72a216f80f88bd1feac0475aa224f59211bbdf583"
+        },
+        "diff_log": {}
     }
 ]

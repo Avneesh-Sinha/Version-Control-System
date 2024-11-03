@@ -236,5 +236,166 @@
                 "+bleh bleh bleh"
             ]
         }
+    },
+    {
+        "message": "Merged branch 'test_2' into 'main'",
+        "snapshot": {
+            "example.txt": "c4c75aa23f0d636401072d1ea65ae7791f1323f9e9fb0631fdbed2547b477973",
+            "test.txt": "01cd6fa362fa9b75225d34b72a216f80f88bd1feac0475aa224f59211bbdf583"
+        },
+        "timestamp": "2024-11-03T21:16:04.195615"
+    },
+    {
+        "message": "Merged branch 'test_2' into 'main'",
+        "snapshot": {
+            "example.txt": "c4c75aa23f0d636401072d1ea65ae7791f1323f9e9fb0631fdbed2547b477973",
+            "test.txt": "01cd6fa362fa9b75225d34b72a216f80f88bd1feac0475aa224f59211bbdf583",
+            "sub_main.txt": "a59f3368a9a1af9b0e904c6810b3fa0d522a057623341d1710bab587a3565bba"
+        },
+        "timestamp": "2024-11-03T21:16:27.261887"
+    },
+    {
+        "id": 21,
+        "timestamp": "2024-11-03T21:17:11.997653",
+        "message": "Updated example.txt on branch 'main' from client.",
+        "snapshot": {
+            "example.txt": "e9e5ab56189472d90860c5d0be3c9165d027c92cc6cce1b00657561afd826201",
+            "sub_main.txt": "a59f3368a9a1af9b0e904c6810b3fa0d522a057623341d1710bab587a3565bba",
+            "test.txt": "01cd6fa362fa9b75225d34b72a216f80f88bd1feac0475aa224f59211bbdf583"
+        },
+        "diff_log": {
+            "example.txt": [
+                "--- ",
+                "+++ ",
+                "@@ -1,2 +1,2 @@",
+                " Changed file content from laptop.\n",
+                "-Changed file from GUI.",
+                "+merge test."
+            ]
+        }
+    },
+    {
+        "id": 22,
+        "timestamp": "2024-11-03T21:17:12.116276",
+        "message": "Updated sub_main.txt on branch 'main' from client.",
+        "snapshot": {
+            "example.txt": "e9e5ab56189472d90860c5d0be3c9165d027c92cc6cce1b00657561afd826201",
+            "sub_main.txt": "a59f3368a9a1af9b0e904c6810b3fa0d522a057623341d1710bab587a3565bba",
+            "test.txt": "01cd6fa362fa9b75225d34b72a216f80f88bd1feac0475aa224f59211bbdf583"
+        },
+        "diff_log": {}
+    },
+    {
+        "id": 23,
+        "timestamp": "2024-11-03T21:17:12.233447",
+        "message": "Updated test.txt on branch 'main' from client.",
+        "snapshot": {
+            "example.txt": "e9e5ab56189472d90860c5d0be3c9165d027c92cc6cce1b00657561afd826201",
+            "sub_main.txt": "a59f3368a9a1af9b0e904c6810b3fa0d522a057623341d1710bab587a3565bba",
+            "test.txt": "01cd6fa362fa9b75225d34b72a216f80f88bd1feac0475aa224f59211bbdf583"
+        },
+        "diff_log": {}
+    },
+    {
+        "id": 24,
+        "timestamp": "2024-11-03T23:58:07.090739",
+        "message": "Updated example.txt on branch 'main' from client.",
+        "snapshot": {
+            "example.txt": "e9e5ab56189472d90860c5d0be3c9165d027c92cc6cce1b00657561afd826201",
+            "sub_main.txt": "a59f3368a9a1af9b0e904c6810b3fa0d522a057623341d1710bab587a3565bba",
+            "test.txt": "dcd3b7df7715b2380d4d1ce9c61c937e41ef1639c4a4c2b9138b1ac1e9157d7a"
+        },
+        "diff_log": {
+            "test.txt": [
+                "--- ",
+                "+++ ",
+                "@@ -1,2 +1,2 @@",
+                " for testing gui.\n",
+                "-bleh bleh bleh",
+                "+bleh"
+            ]
+        }
+    },
+    {
+        "id": 25,
+        "timestamp": "2024-11-03T23:58:07.208764",
+        "message": "Updated sub_main.txt on branch 'main' from client.",
+        "snapshot": {
+            "example.txt": "e9e5ab56189472d90860c5d0be3c9165d027c92cc6cce1b00657561afd826201",
+            "sub_main.txt": "a59f3368a9a1af9b0e904c6810b3fa0d522a057623341d1710bab587a3565bba",
+            "test.txt": "dcd3b7df7715b2380d4d1ce9c61c937e41ef1639c4a4c2b9138b1ac1e9157d7a"
+        },
+        "diff_log": {}
+    },
+    {
+        "id": 26,
+        "timestamp": "2024-11-03T23:58:07.334618",
+        "message": "Updated test.txt on branch 'main' from client.",
+        "snapshot": {
+            "example.txt": "e9e5ab56189472d90860c5d0be3c9165d027c92cc6cce1b00657561afd826201",
+            "sub_main.txt": "a59f3368a9a1af9b0e904c6810b3fa0d522a057623341d1710bab587a3565bba",
+            "test.txt": "c4de94359a3c739b12e1aff139bff99d70fb741d7090cec00692c17a8554f582"
+        },
+        "diff_log": {
+            "test.txt": [
+                "--- ",
+                "+++ ",
+                "@@ -1,2 +1,2 @@",
+                "-for testing gui.\n",
+                "-bleh",
+                "+for i in range(100):\n",
+                "+    print(i)"
+            ]
+        }
+    },
+    {
+        "id": 27,
+        "timestamp": "2024-11-04T00:04:06.178182",
+        "message": "Updated example.txt on branch 'main' from client.",
+        "snapshot": {
+            "example.txt": "c4c75aa23f0d636401072d1ea65ae7791f1323f9e9fb0631fdbed2547b477973",
+            "sub_main.txt": "a59f3368a9a1af9b0e904c6810b3fa0d522a057623341d1710bab587a3565bba",
+            "test.txt": "0e5568a89ffd484291240bf315187583fecc7a5ed06ef019543efa2cabbdc778"
+        },
+        "diff_log": {
+            "example.txt": [
+                "--- ",
+                "+++ ",
+                "@@ -1,2 +1,2 @@",
+                " Changed file content from laptop.\n",
+                "-merge test.",
+                "+Changed file from GUI."
+            ],
+            "test.txt": [
+                "--- ",
+                "+++ ",
+                "@@ -1,2 +1,2 @@",
+                "-for i in range(100):\n",
+                "+for i in range(200):\n",
+                "     print(i)"
+            ]
+        }
+    },
+    {
+        "id": 28,
+        "timestamp": "2024-11-04T00:04:06.311172",
+        "message": "Updated sub_main.txt on branch 'main' from client.",
+        "snapshot": {
+            "example.txt": "c4c75aa23f0d636401072d1ea65ae7791f1323f9e9fb0631fdbed2547b477973",
+            "sub_main.txt": "a59f3368a9a1af9b0e904c6810b3fa0d522a057623341d1710bab587a3565bba",
+            "test.txt": "0e5568a89ffd484291240bf315187583fecc7a5ed06ef019543efa2cabbdc778"
+        },
+        "diff_log": {}
+    },
+    {
+        "id": 29,
+        "timestamp": "2024-11-04T00:04:06.441291",
+        "message": "Updated test.txt on branch 'main' from client.",
+        "snapshot": {
+            "example.txt": "c4c75aa23f0d636401072d1ea65ae7791f1323f9e9fb0631fdbed2547b477973",
+            "sub_main.txt": "a59f3368a9a1af9b0e904c6810b3fa0d522a057623341d1710bab587a3565bba",
+            "test.txt": "0e5568a89ffd484291240bf315187583fecc7a5ed06ef019543efa2cabbdc778"
+        },
+        "diff_log": {}
     }
 ]
