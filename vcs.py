@@ -8,8 +8,11 @@ import requests
 import difflib
 from typing import List, Dict, Tuple
 import google.generativeai as genai
+from dotenv import load_dotenv
 
-genai.configure(api_key='AIzaSyCH28n91GHM_naGEEDHO7im5T37uQQvnUY')
+load_dotenv()
+api_key = os.getenv("GEMINI_API")
+genai.configure(api_key=api_key)
 
 class GemBot():
 
